@@ -1,7 +1,9 @@
 package com.lotus.flatmate.user.controller;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -52,6 +54,12 @@ public class UserController {
 	public ApiResponse resetPassword(@CurrentUser UserPrincipal userPrincipal, @Valid @RequestBody ResetPasswordRequest request) {
 		userService.resetPassword(userPrincipal.getId(), passwordEncoder.encode(request.getPassword()));
 		return new ApiResponse(true, "Your password has been successfully reset. You can now log in to your account using your new password.");
+	}
+	
+	@GetMapping("/me")
+	@PreAuthorize("hasRole('ROLE_USER')")
+	public ResponseEntity<?> getUserProfileDetail(@CurrentUser UserPrincipal userPrincipal) {
+		return null;
 	}
 	
 }
