@@ -10,6 +10,7 @@ import com.lotus.flatmate.exception.RecordNotFoundException;
 import com.lotus.flatmate.exception.VerificationCodeMismatchException;
 import com.lotus.flatmate.security.JwtTokenProvider;
 import com.lotus.flatmate.service.MailService;
+import com.lotus.flatmate.user.dto.UserDto;
 import com.lotus.flatmate.user.entity.User;
 import com.lotus.flatmate.user.mapper.UserMapper;
 import com.lotus.flatmate.user.repository.UserRepository;
@@ -58,7 +59,9 @@ public class UserSeviceImpl implements UserService {
 		if (!user.getEmailVerification().getVerificationCode().equals(request.getCode())) {
 			throw new VerificationCodeMismatchException("Verificaiton code mismatch.");
 		} 
-		String token = tokenProvider.generateRefreshToken(user);
+		user.getEmailVerification().setVerificationCode(null);
+		User verifiedUser = userRepository.save(user);
+		String token = tokenProvider.generateRefreshToken(verifiedUser);
 		return new OtpVerificationResponse(token, true);
 	}
 
@@ -67,6 +70,20 @@ public class UserSeviceImpl implements UserService {
 		User user = userRepository.findById(userId).get();
 		user.setPassword(password);
 		userRepository.save(user);
+	}
+
+	@Override
+	public UserDto getProfileDetails(Long id) {
+		User user = userRepository.findById(id).get();
+		
+		return userMapper.mapToUserDto(user);
+	}
+
+	@Override
+	public UserDto getById(Long id) {
+		User user = userRepository.findById(id)
+				.orElseThrow(() -> new RecordNotFoundException("User not found with id : " + id));
+		return userMapper.mapToUserDto(user);
 	}
 
 }

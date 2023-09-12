@@ -7,9 +7,10 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.lotus.flatmate.emailVerification.EmailVerification;
+import com.lotus.flatmate.emailVerification.entity.EmailVerification;
 import com.lotus.flatmate.refreshToken.entity.RefreshToken;
 import com.lotus.flatmate.role.entity.Role;
+import com.lotus.flatmate.socialContact.entity.SocialContact;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -24,6 +25,7 @@ import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import jakarta.persistence.Version;
@@ -82,5 +84,8 @@ public class User {
 	
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "user")
 	private RefreshToken refreshToken;
+	
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "user")
+	private List<SocialContact> socialContacts;
 	
 }

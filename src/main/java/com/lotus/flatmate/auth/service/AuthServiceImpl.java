@@ -1,6 +1,8 @@
 package com.lotus.flatmate.auth.service;
 
+import java.time.Instant;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -8,16 +10,20 @@ import org.springframework.stereotype.Service;
 
 import com.lotus.flatmate.auth.request.VerificationRequest;
 import com.lotus.flatmate.auth.response.CodeVerificationResponse;
+import com.lotus.flatmate.auth.response.JwtAuthenticationResponse;
 import com.lotus.flatmate.auth.response.VerificationResponse;
-import com.lotus.flatmate.emailVerification.EmailVerification;
-import com.lotus.flatmate.emailVerification.EmailVerificationRepository;
+import com.lotus.flatmate.emailVerification.entity.EmailVerification;
+import com.lotus.flatmate.emailVerification.repository.EmailVerificationRepository;
 import com.lotus.flatmate.exception.AppException;
 import com.lotus.flatmate.exception.RecordAlreadyExistException;
 import com.lotus.flatmate.exception.RecordNotFoundException;
 import com.lotus.flatmate.exception.VerificationCodeMismatchException;
+import com.lotus.flatmate.refreshToken.entity.RefreshToken;
+import com.lotus.flatmate.refreshToken.repository.RefreshTokenRepository;
 import com.lotus.flatmate.role.entity.Role;
 import com.lotus.flatmate.role.entity.RoleName;
 import com.lotus.flatmate.role.repository.RoleRepository;
+import com.lotus.flatmate.security.JwtTokenProvider;
 import com.lotus.flatmate.service.MailService;
 import com.lotus.flatmate.user.dto.UserDto;
 import com.lotus.flatmate.user.entity.LoginProvider;
@@ -41,6 +47,10 @@ public class AuthServiceImpl implements AuthService {
 	private final MailTemplate mailTemplate;
 	
 	private final EmailVerificationRepository emailVerificationRepository;
+	
+	private final RefreshTokenRepository refreshTokenRepository;
+	
+	private final JwtTokenProvider jwtTokenProvider;
 	
 	private String generateOpt() {
 		return UUID.randomUUID().toString().replaceAll("[^0-9]", "").substring(0, 6);
@@ -82,7 +92,7 @@ public class AuthServiceImpl implements AuthService {
 		mailService.sendEmail(userDto.getEmail(), "[" + otp + "] Verification code", mailBody);
 		response.setEmail(userDto.getEmail());
 		response.setMessage("Verification code was sent to " + userDto.getEmail() + ".");
-		response.setStatus(true);
+		response.setSuccess(true);
 		return response;
 	}
 	@Override
@@ -90,7 +100,7 @@ public class AuthServiceImpl implements AuthService {
 		EmailVerification emailVerification = emailVerificationRepository.findByEmail(request.getEmail())
 				.orElseThrow(() -> new RecordNotFoundException("User account with email '" + request.getEmail() + "' not found."));
 		if (!emailVerification.getVerificationCode().equals(request.getCode())) {
-			throw new VerificationCodeMismatchException("Verificaiton code mismatch.");
+			throw new VerificationCodeMismatchException("Verification code mismatch.");
 		}
 		emailVerification.setVerified(true);
 		emailVerification.setEmail(null);
@@ -101,5 +111,19 @@ public class AuthServiceImpl implements AuthService {
 		user.setEmailVerification(savedEmailVerification);
 		userRepository.save(user);
 		return new CodeVerificationResponse(true, "User successfully registered!");
+	}
+
+	@Override
+	public JwtAuthenticationResponse validateRefreshToken(@Valid String token) {
+		RefreshToken refreshToken = refreshTokenRepository.findByToken(token)
+				.orElseThrow(() -> new RecordNotFoundException("Token does not exist or incorrect!"));
+		User user = refreshToken.getUser();
+		user.setUpdatedAt(Instant.now());
+		userRepository.save(user);
+		String jwtToken = jwtTokenProvider.generateRefreshToken(user);
+		String newRefreshToken = UUID.randomUUID().toString();
+		refreshToken.setRefreshToken(newRefreshToken);
+		refreshTokenRepository.save(refreshToken);
+		return new JwtAuthenticationResponse(jwtToken, new Date(new Date().getTime() + 86400000), newRefreshToken);
 	}
 }

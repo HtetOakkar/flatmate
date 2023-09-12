@@ -26,12 +26,15 @@ public class AppConfig {
 		return new RestTemplate();
 	}
 
-	@Bean(name = "threadPoolTaskExecutor")
+	@Bean(name = "TaskExecutor")
 	Executor threadPoolTaskExecutor() {
 		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-		executor.setCorePoolSize(10);
-		executor.setMaxPoolSize(1000);
+		executor.setCorePoolSize(25);
+		executor.setMaxPoolSize(25);
+		executor.setKeepAliveSeconds(1200);
+		executor.setThreadNamePrefix("PostThread-");
 		executor.setQueueCapacity(100);
+		executor.initialize();
 		return executor;
 	}
 

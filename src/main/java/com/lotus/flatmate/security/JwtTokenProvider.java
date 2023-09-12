@@ -51,10 +51,10 @@ public class JwtTokenProvider {
 
 	public String generateJwtToken(UserDto user) {
 
-		List<RoleDto> roles = user.getRoles();
-		for (RoleDto role : roles) {
+		List<RoleDto> roleDtos = user.getRoleDtos();
+		for (RoleDto roleDto : roleDtos) {
 			return Jwts.builder().setId(Long.toString(user.getId())).setSubject((user.getUsername()))
-					.claim("roles", role.getRoleName()).setIssuedAt(new Date(new Date().getTime()))
+					.claim("roles", roleDto.getRoleName()).setIssuedAt(new Date(new Date().getTime()))
 					.setExpiration(new Date((new Date()).getTime() + JWT_EXPIRATION * 1000))
 					.signWith(getSignKey(), SignatureAlgorithm.HS512).compact();
 		}

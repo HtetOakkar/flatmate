@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.List;
 
 import com.lotus.flatmate.role.dto.RoleDto;
+import com.lotus.flatmate.socialContact.dto.SocialContactDto;
 import com.lotus.flatmate.user.entity.LoginProvider;
 
 import lombok.Getter;
@@ -16,9 +17,11 @@ public class UserDto {
 	private String username;
 	private String email;
 	private String mobileNumber;
+	private String profileUrl;
 	private String password;
 	private Instant createdAt;
 	private Instant updatedAt;
 	private LoginProvider loginProvider;
-	private List<RoleDto> roles;
+	private List<RoleDto> roleDtos;
+	private List<SocialContactDto> socialContactDtos;
 }

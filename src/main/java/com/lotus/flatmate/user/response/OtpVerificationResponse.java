@@ -9,5 +9,5 @@ import lombok.Setter;
 @AllArgsConstructor
 public class OtpVerificationResponse {
 	private String token;
-	private boolean status;
+	private boolean success;
 }

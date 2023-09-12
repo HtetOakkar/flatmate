@@ -2,6 +2,7 @@ package com.lotus.flatmate.user.service;
 
 import com.lotus.flatmate.auth.request.VerificationRequest;
 import com.lotus.flatmate.auth.response.VerificationResponse;
+import com.lotus.flatmate.user.dto.UserDto;
 import com.lotus.flatmate.user.response.OtpVerificationResponse;
 
 import jakarta.validation.Valid;
@@ -13,5 +14,9 @@ public interface UserService {
 	OtpVerificationResponse verifyOtp(@Valid VerificationRequest request);
 
 	void resetPassword(Long userId, String password);
+
+	UserDto getProfileDetails(Long id);
+
+	UserDto getById(Long id);
 
 }

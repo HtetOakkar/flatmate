@@ -29,7 +29,7 @@ public class MailServiceImpl implements MailService{
 		this.javaMailSender = javaMailSender;
 	}
 
-	@Async("threadPoolTaskExecutor")
+	@Async("TaskExecutor")
 	@Override
 	public void sendEmail(String to, String subject, String body) {
 		MimeMessage mimeMessage = javaMailSender.createMimeMessage();

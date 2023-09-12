@@ -67,7 +67,7 @@ public class SecurityConfig {
 				.sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authorizeHttpRequests(request -> request
 						.requestMatchers("/api/auth/user/register", "/api/auth/user/verify", "/api/auth/login",
-								"/api/user/check-email", "/api/user/verify-otp")
+								"/api/user/check-email", "/api/user/verify-otp", "/api/auth/refresh-token")
 						.permitAll().anyRequest().authenticated())
 				.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
 				.exceptionHandling(handler -> handler.authenticationEntryPoint(unauthorizedHandler)).build();

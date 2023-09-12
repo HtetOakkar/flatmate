@@ -8,15 +8,15 @@ import lombok.Setter;
 @Getter
 @Setter
 public class VerificationResponse {
-	@JsonProperty("status")
-	private boolean status;
+	@JsonProperty("success")
+	private boolean success;
 	@JsonProperty("sent_to")
 	private String email;
 	@JsonProperty("message")
 	private String message;
-	public VerificationResponse(boolean status, String email, String message) {
+	public VerificationResponse(boolean success, String email, String message) {
 		super();
-		this.status = status;
+		this.success = success;
 		this.email = email;
 		this.message = message;
 	}
