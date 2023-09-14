@@ -1,5 +1,6 @@
 package com.lotus.flatmate.user.controller;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,19 +12,27 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.lotus.flatmate.auth.request.VerificationRequest;
 import com.lotus.flatmate.auth.response.ApiResponse;
 import com.lotus.flatmate.auth.response.VerificationResponse;
+import com.lotus.flatmate.exception.PasswordMismatchException;
 import com.lotus.flatmate.security.CurrentUser;
 import com.lotus.flatmate.security.UserPrincipal;
+import com.lotus.flatmate.service.ImageUploadService;
 import com.lotus.flatmate.socialContact.dto.SocialContactDto;
 import com.lotus.flatmate.socialContact.request.SocialContactRequest;
 import com.lotus.flatmate.socialContact.service.SocialContactService;
 import com.lotus.flatmate.user.dto.UserDto;
 import com.lotus.flatmate.user.mapper.UserMapper;
+import com.lotus.flatmate.user.request.ChangeMobileNumberRequest;
+import com.lotus.flatmate.user.request.ChangePasswordRequest;
+import com.lotus.flatmate.user.request.ChangeUsernameRequest;
 import com.lotus.flatmate.user.request.CheckEmailRequest;
+import com.lotus.flatmate.user.request.ProfileUploadRequest;
 import com.lotus.flatmate.user.request.ResetPasswordRequest;
 import com.lotus.flatmate.user.response.OtpVerificationResponse;
 import com.lotus.flatmate.user.response.UserProfileResponse;
@@ -44,6 +53,8 @@ public class UserController {
 	private final PasswordEncoder passwordEncoder;
 
 	private final SocialContactService socialContactService;
+
+	private final ImageUploadService imageUploadService;
 
 	// Forgot password first step
 	@PostMapping("/check-email")
@@ -90,11 +101,60 @@ public class UserController {
 				}
 			}
 		}
-		
+
 		socialContactDtos.add(socialContactDto);
 
 		userDto.setSocialContactDtos(socialContactDtos);
 		return ResponseEntity.ok(userMapper.mapToProfileResponse(userDto));
 	}
 
+	@PutMapping("/me/password")
+	@PreAuthorize("hasRole('ROLE_USER')")
+	public ApiResponse changePassword(@CurrentUser UserPrincipal userPrincipal,
+			@RequestBody ChangePasswordRequest request) {
+		UserDto userDto = userService.getById(userPrincipal.getId());
+		if (!passwordEncoder.matches(request.getCurrentPassword(), userDto.getPassword())) {
+			throw new PasswordMismatchException("Current password is incorrect.");
+		}
+		userService.changePassword(passwordEncoder.encode(request.getNewPassword()), userPrincipal.getId());
+		return new ApiResponse(true, "Password successfully changed.");
+	}
+
+	@PutMapping("/me/username")
+	@PreAuthorize("hasRole('ROLE_USER')")
+	public UserProfileResponse changeUsername(@CurrentUser UserPrincipal userPrincipal,
+			@RequestBody ChangeUsernameRequest request) {
+		UserDto userDto = userService.changeUsername(request.getUsername(), userPrincipal.getId());
+		return userMapper.mapToProfileResponse(userDto);
+	}
+
+	@PutMapping("/me/mobile-number")
+	@PreAuthorize("hasRole('ROLE_USER')")
+	public UserProfileResponse changeMobileNumber(@CurrentUser UserPrincipal userPrincipal,
+			@RequestBody ChangeMobileNumberRequest request) {
+		UserDto userDto = userService.changeMobileNumber(request.getMobileNumber(), userPrincipal.getId());
+		return userMapper.mapToProfileResponse(userDto);
+	}
+
+	@PostMapping("/me/profile")
+	@PreAuthorize("hasRole('ROLE_USER')")
+	public UserProfileResponse uploadUserProfilePhoto(@CurrentUser UserPrincipal userPrincipal,
+			@RequestPart(value = "image", required = false) MultipartFile image,
+			@RequestPart(value = "data") ProfileUploadRequest request) throws IOException {
+		if (!image.isEmpty()) {
+			String folderName = "profile_photos";
+			if (request.getImageUrl() != null) {
+				 String previousUrl = request.getImageUrl();
+				 imageUploadService.deleteImage(previousUrl, folderName);
+			}
+			
+			String profileUrl = imageUploadService.uploadImage(image, folderName);
+			request.setImageUrl(profileUrl);
+
+		}
+
+		UserDto userDto = userService.uploadProfilePhoto(request, userPrincipal.getId());
+		return userMapper.mapToProfileResponse(userDto);
+	}
+	
 }

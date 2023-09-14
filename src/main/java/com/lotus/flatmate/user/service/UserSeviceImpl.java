@@ -14,6 +14,7 @@ import com.lotus.flatmate.user.dto.UserDto;
 import com.lotus.flatmate.user.entity.User;
 import com.lotus.flatmate.user.mapper.UserMapper;
 import com.lotus.flatmate.user.repository.UserRepository;
+import com.lotus.flatmate.user.request.ProfileUploadRequest;
 import com.lotus.flatmate.user.response.OtpVerificationResponse;
 import com.lotus.flatmate.util.MailTemplate;
 
@@ -84,6 +85,34 @@ public class UserSeviceImpl implements UserService {
 		User user = userRepository.findById(id)
 				.orElseThrow(() -> new RecordNotFoundException("User not found with id : " + id));
 		return userMapper.mapToUserDto(user);
+	}
+
+	@Override
+	public void changePassword(String newPassword, Long id) {
+		User user = userRepository.findById(id).get();
+		user.setPassword(newPassword);
+		userRepository.save(user);
+	}
+
+	@Override
+	public UserDto changeUsername(String username, Long id) {
+		User user = userRepository.findById(id).get();
+		user.setUsername(username);
+		return userMapper.mapToUserDto(userRepository.save(user));
+	}
+
+	@Override
+	public UserDto changeMobileNumber(String mobileNumber, Long id) {
+		User user = userRepository.findById(id).get();
+		user.setMobileNumber(mobileNumber);
+		return userMapper.mapToUserDto(userRepository.save(user));
+	}
+
+	@Override
+	public UserDto uploadProfilePhoto(ProfileUploadRequest request, Long id) {
+		User user = userRepository.findById(id).get();
+		user.setProfileUrl(request.getImageUrl());
+		return userMapper.mapToUserDto(userRepository.save(user));
 	}
 
 }

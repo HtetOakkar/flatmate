@@ -1,4 +1,4 @@
-package com.lotus.flatmate.service;
+package com.lotus.flatmate.service.impl;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

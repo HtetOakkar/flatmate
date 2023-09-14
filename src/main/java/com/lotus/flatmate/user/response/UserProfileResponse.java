@@ -18,6 +18,6 @@ public class UserProfileResponse {
 	private String mobileNumber;
 	@JsonProperty("profile_url")
 	private String profileUrl;
-	@JsonProperty("social_contacats")
+	@JsonProperty("social_contacts")
 	private List<SocialContactResponse> socialContacts;
 }

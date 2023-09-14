@@ -23,7 +23,7 @@ public class MailTemplate {
 				+ "      <p>Please enter this OTP in the provided field to complete the verification process.</p>\r\n"
 				+ "      <p>Thank you for using our service!</p>\r\n"
 				+ "      <p>Best regards,</p>\r\n"
-				+ "      <p>Flatmates team</p>\r\n"
+				+ "      <p>Flatmate team</p>\r\n"
 				+ "    </div>\r\n"
 				+ "  </div>\r\n"
 				+ "</body>\r\n"

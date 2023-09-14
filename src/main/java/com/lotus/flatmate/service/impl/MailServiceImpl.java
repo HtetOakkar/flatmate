@@ -1,4 +1,4 @@
-package com.lotus.flatmate.service;
+package com.lotus.flatmate.service.impl;
 
 import java.io.UnsupportedEncodingException;
 
@@ -7,6 +7,8 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+
+import com.lotus.flatmate.service.MailService;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;

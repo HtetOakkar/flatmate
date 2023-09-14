@@ -39,66 +39,72 @@ import lombok.RequiredArgsConstructor;
 public class AuthServiceImpl implements AuthService {
 
 	private final UserRepository userRepository;
-	
+
 	private final RoleRepository roleRepository;
-	
+
 	private final MailService mailService;
-	
+
 	private final MailTemplate mailTemplate;
-	
+
 	private final EmailVerificationRepository emailVerificationRepository;
-	
+
 	private final RefreshTokenRepository refreshTokenRepository;
-	
+
 	private final JwtTokenProvider jwtTokenProvider;
-	
+
 	private String generateOpt() {
 		return UUID.randomUUID().toString().replaceAll("[^0-9]", "").substring(0, 6);
 	}
-	
+
 	@Override
 	public VerificationResponse registerUser(UserDto userDto) {
 		String otp = generateOpt();
 		String mailBody = mailTemplate.verificationMailTemplate(userDto.getUsername(), otp);
 		VerificationResponse response = new VerificationResponse();
-		Optional<User> existingUserOpt = userRepository.findByEmail(userDto.getEmail());
-		if (existingUserOpt.isPresent()) {
-			User existingUser = existingUserOpt.get();
-			if (existingUser.getEmailVerification().isVerified()) {
-				throw new RecordAlreadyExistException("User Account with email '" + userDto.getEmail() + "' already exist!");
-			} else {
-				existingUser.getEmailVerification().setVerificationCode(otp);
-				existingUser.setUsername(userDto.getUsername());
-				existingUser.setPassword(userDto.getPassword());
-				userRepository.save(existingUser);
-			}
+		Optional<EmailVerification> existingEmailVerificationOpt = emailVerificationRepository
+				.findByEmail(userDto.getEmail());
+		if (existingEmailVerificationOpt.isPresent()) {
+			User existingUser = existingEmailVerificationOpt.get().getUser();
+			existingUser.setUsername(userDto.getUsername());
+			existingUser.setPassword(userDto.getPassword());
+			existingUser.setMobileNumber(userDto.getMobileNumber());
+			existingUser.getEmailVerification().setVerificationCode(otp);
+			userRepository.save(existingUser);
 		} else {
-			User user = new User();
-			user.setUsername(userDto.getUsername());
-			user.setPassword(userDto.getPassword());
-			user.setMobileNumber(userDto.getMobileNumber());
-			user.setLoginProvider(LoginProvider.EMAIL);
-			EmailVerification emailVerification = new EmailVerification();
-			emailVerification.setEmail(userDto.getEmail());
-			emailVerification.setVerificationCode(otp);
-			emailVerification.setUser(user);
-			user.setEmailVerification(emailVerification);
-			Role userRole = roleRepository.findByName(RoleName.ROLE_USER)
-					.orElseThrow(() -> new AppException("User Role not set."));
-			user.setRoles(Collections.singletonList(userRole));
-			userRepository.save(user);
+			Optional<User> existingUserOpt = userRepository.findByEmail(userDto.getEmail());
+
+			if (existingUserOpt.isPresent()) {
+				throw new RecordAlreadyExistException(
+						"User Account with email '" + userDto.getEmail() + "' already exist!");
+			} else {
+				User user = new User();
+				user.setUsername(userDto.getUsername());
+				user.setPassword(userDto.getPassword());
+				user.setMobileNumber(userDto.getMobileNumber());
+				user.setLoginProvider(LoginProvider.EMAIL);
+				EmailVerification emailVerification = new EmailVerification();
+				emailVerification.setEmail(userDto.getEmail());
+				emailVerification.setVerificationCode(otp);
+				emailVerification.setUser(user);
+				user.setEmailVerification(emailVerification);
+				Role userRole = roleRepository.findByName(RoleName.ROLE_USER)
+						.orElseThrow(() -> new AppException("User Role not set."));
+				user.setRoles(Collections.singletonList(userRole));
+				userRepository.save(user);
+			}
 		}
-		
-		mailService.sendEmail(userDto.getEmail(), "[" + otp + "] Verification code", mailBody);
+
+		mailService.sendEmail(userDto.getEmail(), "Verification code", mailBody);
 		response.setEmail(userDto.getEmail());
 		response.setMessage("Verification code was sent to " + userDto.getEmail() + ".");
 		response.setSuccess(true);
 		return response;
 	}
+
 	@Override
 	public CodeVerificationResponse verifyUser(@Valid VerificationRequest request) {
-		EmailVerification emailVerification = emailVerificationRepository.findByEmail(request.getEmail())
-				.orElseThrow(() -> new RecordNotFoundException("User account with email '" + request.getEmail() + "' not found."));
+		EmailVerification emailVerification = emailVerificationRepository.findByEmail(request.getEmail()).orElseThrow(
+				() -> new RecordNotFoundException("User account with email '" + request.getEmail() + "' not found."));
 		if (!emailVerification.getVerificationCode().equals(request.getCode())) {
 			throw new VerificationCodeMismatchException("Verification code mismatch.");
 		}
@@ -109,6 +115,7 @@ public class AuthServiceImpl implements AuthService {
 		User user = emailVerification.getUser();
 		user.setEmail(request.getEmail());
 		user.setEmailVerification(savedEmailVerification);
+		user.setUpdatedAt(Instant.now());
 		userRepository.save(user);
 		return new CodeVerificationResponse(true, "User successfully registered!");
 	}
