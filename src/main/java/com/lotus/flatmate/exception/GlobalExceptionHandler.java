@@ -20,6 +20,7 @@ public class GlobalExceptionHandler {
 		response.put("timestamp", new Date(new Date().getTime()));
 		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
 	}
+
 	@ExceptionHandler(NonVerifiedException.class)
 	public ResponseEntity<?> handleNonVerifiedException(NonVerifiedException e) {
 		Map<String, Object> response = new HashMap<>();
@@ -28,6 +29,7 @@ public class GlobalExceptionHandler {
 		response.put("timestamp", new Date(new Date().getTime()));
 		return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
 	}
+
 	@ExceptionHandler(AppException.class)
 	public ResponseEntity<?> handleAppException(AppException e) {
 		Map<String, Object> response = new HashMap<>();
@@ -36,6 +38,7 @@ public class GlobalExceptionHandler {
 		response.put("timestamp", new Date(new Date().getTime()));
 		return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
 	}
+
 	@ExceptionHandler(RecordAlreadyExistException.class)
 	public ResponseEntity<?> handleRecordAlreadyExistException(RecordAlreadyExistException e) {
 		Map<String, Object> response = new HashMap<>();
@@ -44,6 +47,7 @@ public class GlobalExceptionHandler {
 		response.put("timestamp", new Date(new Date().getTime()));
 		return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
 	}
+
 	@ExceptionHandler(RecordNotFoundException.class)
 	public ResponseEntity<?> handleRecordNotFoundException(RecordNotFoundException e) {
 		Map<String, Object> response = new HashMap<>();
@@ -52,6 +56,7 @@ public class GlobalExceptionHandler {
 		response.put("timestamp", new Date(new Date().getTime()));
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
 	}
+
 	@ExceptionHandler(VerificationCodeMismatchException.class)
 	public ResponseEntity<?> handleVerificationCodeMismatchException(VerificationCodeMismatchException e) {
 		Map<String, Object> response = new HashMap<>();
@@ -59,5 +64,14 @@ public class GlobalExceptionHandler {
 		response.put("message", e.getMessage());
 		response.put("timestamp", new Date(new Date().getTime()));
 		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+	}
+	
+	@ExceptionHandler(UnauthorizedActionException.class)
+	public ResponseEntity<?> handleUnauthorizedActionException(UnauthorizedActionException e) {
+		Map<String, Object> response = new HashMap<>();
+		response.put("status", HttpStatus.UNAUTHORIZED);
+		response.put("message", e.getMessage());
+		response.put("timestamp", new Date(new Date().getTime()));
+		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
 	}
 }

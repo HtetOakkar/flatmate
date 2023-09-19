@@ -8,6 +8,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.lotus.flatmate.emailVerification.entity.EmailVerification;
+import com.lotus.flatmate.post.entity.Post;
 import com.lotus.flatmate.refreshToken.entity.RefreshToken;
 import com.lotus.flatmate.role.entity.Role;
 import com.lotus.flatmate.socialContact.entity.SocialContact;
@@ -87,5 +88,8 @@ public class User {
 	
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "user")
 	private List<SocialContact> socialContacts;
+	
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "user")
+	private List<Post> posts;
 	
 }

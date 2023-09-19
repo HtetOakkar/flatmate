@@ -25,13 +25,17 @@ public class SocialContact {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "social_contact_id")
 	private Long id;
+	
 	@Column(name = "username")
 	private String username;
+	
 	@Column(name = "url")
 	private String url;
+	
 	@Enumerated(EnumType.STRING)
 	@Column(name = "contact_type")
 	private SocialContactType contactType;
+	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id", referencedColumnName = "user_id")
 	private User user;

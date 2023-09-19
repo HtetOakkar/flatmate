@@ -7,7 +7,9 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -106,6 +108,13 @@ public class UserController {
 
 		userDto.setSocialContactDtos(socialContactDtos);
 		return ResponseEntity.ok(userMapper.mapToProfileResponse(userDto));
+	}
+	
+	@DeleteMapping("/me/social-contact/{id}")
+	@PreAuthorize("hasRole('ROLE_USER')")
+	public ApiResponse deleteSocialContact(@CurrentUser UserPrincipal userPrincipal, @PathVariable Long id) {
+		socialContactService.deleteSocialContact(id, userPrincipal.getId());
+		return new ApiResponse(true, "Your social media contact is successfully deleted.");
 	}
 
 	@PutMapping("/me/password")

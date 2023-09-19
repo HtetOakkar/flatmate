@@ -7,4 +7,6 @@ public interface SocialContactService {
 
 	SocialContactDto addSocialContacts(SocialContactRequest request, Long userId);
 
+	void deleteSocialContact(Long socialContactid, Long userId);
+
 }

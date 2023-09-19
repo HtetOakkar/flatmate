@@ -2,6 +2,8 @@ package com.lotus.flatmate.socialContact.service.impl;
 
 import org.springframework.stereotype.Service;
 
+import com.lotus.flatmate.exception.RecordNotFoundException;
+import com.lotus.flatmate.exception.UnauthorizedActionException;
 import com.lotus.flatmate.socialContact.dto.SocialContactDto;
 import com.lotus.flatmate.socialContact.entity.SocialContact;
 import com.lotus.flatmate.socialContact.mapper.SocialContactMapper;
@@ -30,36 +32,58 @@ public class SocialContactServiceImpl implements SocialContactService{
 		User user = userRepository.findById(userId).get();
 		
 		SocialContact socialContact = new SocialContact();
-		if (user.getSocialContacts() != null && user.getSocialContacts().size() > 0) {
-			log.info("contacts exitst");
-			
-			for (SocialContact contact : user.getSocialContacts()) {
-				if (contact.getContactType().equals(request.getContactType())) {
-					log.info("contact type exist");
-					contact.setUsername(request.getUsername());
-					contact.setUrl(request.getUrl());
-					socialContact = socialContactRepository.save(contact);
-				} else {
-					log.info("contact type does not exist");
-					socialContact.setUsername(request.getUsername());
-					socialContact.setUrl(request.getUrl());
-					socialContact.setContactType(request.getContactType());
-					socialContact.setUser(user);
-					
-				}
-			}
-		} else {
-			log.info("contacts do not exist");
-			
-			socialContact.setUsername(request.getUsername());
-			socialContact.setUrl(request.getUrl());
-			socialContact.setContactType(request.getContactType());
-			socialContact.setUser(user);
+		socialContact.setUsername(request.getUsername());
+		socialContact.setUrl(request.getUrl());
+		socialContact.setContactType(request.getContactType());
+		socialContact.setUser(user);
+		for (SocialContact contact : user.getSocialContacts()) {
+			if (contact.getContactType().equals(request.getContactType())) {
+				log.info("contact type exist");
+				contact.setUsername(request.getUsername());
+				contact.setUrl(request.getUrl());
+				socialContact = socialContactRepository.save(contact);
+			} 
 		}
+//		if (user.getSocialContacts() != null && user.getSocialContacts().size() > 0) {
+//			log.info("contacts exitst");
+//			
+//			for (SocialContact contact : user.getSocialContacts()) {
+//				if (contact.getContactType().equals(request.getContactType())) {
+//					log.info("contact type exist");
+//					contact.setUsername(request.getUsername());
+//					contact.setUrl(request.getUrl());
+//					socialContact = socialContactRepository.save(contact);
+//				} else {
+//					log.info("contact type does not exist");
+//					socialContact.setUsername(request.getUsername());
+//					socialContact.setUrl(request.getUrl());
+//					socialContact.setContactType(request.getContactType());
+//					socialContact.setUser(user);
+//					
+//				}
+//			}
+//		} else {
+//			log.info("contacts do not exist");
+//			
+//			socialContact.setUsername(request.getUsername());
+//			socialContact.setUrl(request.getUrl());
+//			socialContact.setContactType(request.getContactType());
+//			socialContact.setUser(user);
+//		}
 		
 		
 		return socialContactMapper.mapToSocialContactDto(socialContactRepository.save(socialContact));
 		
+	}
+
+	@Override
+	public void deleteSocialContact(Long socialContactid, Long userId) {
+		SocialContact socialContact = socialContactRepository.findById(socialContactid)
+				.orElseThrow(() -> new RecordNotFoundException("Social contact with id '" + socialContactid + "' does not exist."));
+		if(socialContact.getUser().getId() != userId) {
+			throw new UnauthorizedActionException("You are not authorized to delete this.");
+		}
+		socialContactRepository.delete(socialContact);
 	}
 
 }
