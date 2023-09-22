@@ -12,8 +12,7 @@ target/
 .settings
 .springBeans
 .sts4-cache
-.properties
-.json
+
 
 ### IntelliJ IDEA ###
 .idea
@@ -33,3 +32,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+application.properties
+flatmate-firebase-service-account.json
