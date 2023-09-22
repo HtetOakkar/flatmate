@@ -65,13 +65,13 @@ public class Post {
 	private Instant updatedAt;
 	
 	
-	@OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, mappedBy = "post")
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "post")
 	private List<Picture> pictures;
 	
 	@ManyToOne
 	@JoinColumn(name = "user_id", referencedColumnName = "user_id")
 	private User user;
 	
-	@OneToOne(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, mappedBy = "post")
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "post")
 	private Apartment apartment;
 }

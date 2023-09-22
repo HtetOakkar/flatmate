@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -145,7 +146,7 @@ public class UserController {
 		return userMapper.mapToProfileResponse(userDto);
 	}
 
-	@PostMapping("/me/profile")
+	@PostMapping(path = "/me/profile", consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE })
 	@PreAuthorize("hasRole('ROLE_USER')")
 	public UserProfileResponse uploadUserProfilePhoto(@CurrentUser UserPrincipal userPrincipal,
 			@RequestPart(value = "image", required = false) MultipartFile image,

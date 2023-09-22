@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.lotus.flatmate.aparment.dto.ApartmentDto;
 import com.lotus.flatmate.aparment.entity.Apartment;
 import com.lotus.flatmate.aparment.repository.ApartmentRepository;
+import com.lotus.flatmate.exception.RecordNotFoundException;
 import com.lotus.flatmate.picture.entity.Picture;
 import com.lotus.flatmate.picture.repository.PictureRepository;
 import com.lotus.flatmate.post.dto.PostDto;
@@ -52,17 +53,38 @@ public class PostServiceImpl implements PostService{
 		apartment.setLength(apartmentDto.getLength());
 		apartment.setWidth(apartmentDto.getWidth());
 		apartment.setApartmentType(apartmentDto.getApartmentType());	
-		post.setApartment(apartmentRepository.save(apartment));
+		post.setApartment(apartment);
 		List<Picture> pictures = new ArrayList<>();
 		postDto.getPictures().stream().forEach(pictureDto -> {
 			Picture picture = new Picture();
 			picture.setId(pictureDto.getId());
 			picture.setUrl(pictureDto.getUrl());
-			pictures.add(pictureRepository.save(picture));
+			pictures.add(picture);
 		});
 		post.setPictures(pictures);
 		post.setUser(user);
-		return postMapper.mapToDto(postRepository.save(post));
+		Post savedPost = postRepository.save(post);
+		apartment.setPost(savedPost);
+		apartmentRepository.save(apartment);
+		pictures.forEach(picture -> {
+			picture.setPost(savedPost);
+			pictureRepository.save(picture);
+		});
+		return postMapper.mapToDto(savedPost);
+	}
+
+	@Override
+	public List<PostDto> getUserPosts(Long userId) {
+		User user = userRepository.findById(userId)
+				.orElseThrow(() -> new RecordNotFoundException("User not found with id : " + userId));
+		return user.getPosts().stream().map(postMapper::mapToDto).toList();
+	}
+
+	@Override
+	public PostDto getPostDetails(Long id) {
+		Post post = postRepository.findById(id)
+				.orElseThrow(() -> new RecordNotFoundException("Post not found with id : " + id));
+		return postMapper.mapToDto(post);
 	}
 
 }

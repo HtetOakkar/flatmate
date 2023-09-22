@@ -4,8 +4,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -35,11 +38,12 @@ public class PostController {
 	
 	private final PostService postService;
 	
-	@PostMapping()
+	@PostMapping(consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE })
 	@PreAuthorize("hasRole('ROLE_USER')")
 	public ResponseEntity<?> createPost(@CurrentUser UserPrincipal userPrincipal,@RequestPart(value = "images") MultipartFile[] images, @RequestPart(value = "data") PostRequest request) throws IOException {
 		List<PictureDto> pictureDtos = new ArrayList<>();
 		if (images.length > 0) {
+			
 			for (MultipartFile multipartFile : images) {
 				if(multipartFile != null) {
 					String url = imageUploadService.uploadImage(multipartFile, "post_photos");
@@ -55,6 +59,20 @@ public class PostController {
 		PostDto savedPostDto = postService.createPost(postDto, userPrincipal.getId());
 		PostDetailsResponse response = postMapper.mapToResponse(savedPostDto);
 		return ResponseEntity.ok(response);
+	}
+	
+	@GetMapping("/me")
+	@PreAuthorize("hasRole('ROLE_USER')")
+	public List<PostDetailsResponse> getUserPosts(@CurrentUser UserPrincipal userPrincipal) {
+		List<PostDto> postDtos = postService.getUserPosts(userPrincipal.getId());
+		return postDtos.stream().map(postMapper::mapToResponse).toList();
+	}
+	
+	@GetMapping("/{id}") 
+	@PreAuthorize("hasRole('ROLE_USER')")
+	public PostDetailsResponse getPostDetails(@PathVariable Long id) {
+		PostDto postDto = postService.getPostDetails(id);
+		return postMapper.mapToResponse(postDto);
 	}
 	
 }
