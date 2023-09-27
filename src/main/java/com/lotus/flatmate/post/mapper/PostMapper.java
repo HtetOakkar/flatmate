@@ -1,9 +1,14 @@
 package com.lotus.flatmate.post.mapper;
 
+import org.springframework.data.domain.Page;
+
+import com.lotus.flatmate.post.dto.AllPostDto;
 import com.lotus.flatmate.post.dto.PostDto;
 import com.lotus.flatmate.post.entity.Post;
 import com.lotus.flatmate.post.request.PostRequest;
 import com.lotus.flatmate.post.response.PostDetailsResponse;
+import com.lotus.flatmate.post.response.PostPaginationResponse;
+import com.lotus.flatmate.user.dto.UserDto;
 
 public interface PostMapper {
 
@@ -13,6 +18,8 @@ public interface PostMapper {
 
 	PostDto mapToDto(Post post);
 
-	PostDetailsResponse mapToResponse(PostDto savedPostDto);
+	PostDetailsResponse mapToResponse(PostDto savedPostDto, UserDto userDto);
+
+	PostPaginationResponse mapToPostPageResponse(Page<AllPostDto> postPage);
 
 }

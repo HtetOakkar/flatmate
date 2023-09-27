@@ -2,6 +2,7 @@ package com.lotus.flatmate.aparment.mapper;
 
 import org.springframework.stereotype.Component;
 
+import com.lotus.flatmate.aparment.dto.AllApartmentDto;
 import com.lotus.flatmate.aparment.dto.ApartmentDto;
 import com.lotus.flatmate.aparment.entity.Apartment;
 import com.lotus.flatmate.aparment.request.ApartmentRequest;
@@ -53,6 +54,20 @@ public class ApartmentMapperImpl implements ApartmentMapper{
 		response.setLength(apartmentDto.getLength());
 		response.setWidth(apartmentDto.getWidth());
 		response.setApartmentType(apartmentDto.getApartmentType());
+		return response;
+	}
+
+	@Override
+	public ApartmentResponse mapToResponse(AllApartmentDto apartment) {
+		if (apartment == null) {
+			return null;
+		}
+		ApartmentResponse response = new ApartmentResponse();
+		response.setId(apartment.getId());
+		response.setFloor(apartment.getFloor());
+		response.setWidth(apartment.getWidth());
+		response.setLength(apartment.getLength());
+		response.setApartmentType(apartment.getApartmentType());
 		return response;
 	}
 

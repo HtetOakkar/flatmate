@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.lotus.flatmate.aparment.response.ApartmentResponse;
 import com.lotus.flatmate.picture.response.PictureResponse;
 
@@ -25,4 +26,6 @@ public class PostDetailsResponse {
 	private Instant updatedAt;
 	private ApartmentResponse apartment;
 	private List<PictureResponse> pictures;
+	@JsonProperty("post_owner")
+	private PostUserResponse postOwner;
 }

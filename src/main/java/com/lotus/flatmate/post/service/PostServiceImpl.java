@@ -1,21 +1,28 @@
 package com.lotus.flatmate.post.service;
 
-import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.lotus.flatmate.aparment.dto.ApartmentDto;
 import com.lotus.flatmate.aparment.entity.Apartment;
 import com.lotus.flatmate.aparment.repository.ApartmentRepository;
 import com.lotus.flatmate.exception.RecordNotFoundException;
+import com.lotus.flatmate.exception.UnauthorizedActionException;
 import com.lotus.flatmate.picture.entity.Picture;
 import com.lotus.flatmate.picture.repository.PictureRepository;
+import com.lotus.flatmate.post.dto.AllPostDto;
 import com.lotus.flatmate.post.dto.PostDto;
 import com.lotus.flatmate.post.entity.Post;
 import com.lotus.flatmate.post.mapper.PostMapper;
 import com.lotus.flatmate.post.repository.PostRepository;
+import com.lotus.flatmate.service.ImageUploadService;
+import com.lotus.flatmate.user.dto.UserDto;
 import com.lotus.flatmate.user.entity.User;
+import com.lotus.flatmate.user.mapper.UserMapper;
 import com.lotus.flatmate.user.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -33,6 +40,10 @@ public class PostServiceImpl implements PostService{
 	private final ApartmentRepository apartmentRepository;
 	
 	private final PictureRepository pictureRepository;
+	
+	private final UserMapper userMapper;
+	
+	private final ImageUploadService imageUploadService;
 
 	@Override
 	public PostDto createPost(PostDto postDto, Long userId) {
@@ -46,30 +57,24 @@ public class PostServiceImpl implements PostService{
 		post.setState(postDto.getState());
 		post.setTownship(postDto.getTownship());
 		post.setAdditional(postDto.getAdditional());
-		
+		post.setUser(user);
+		Post savedPost = postRepository.save(post);
 		Apartment apartment = new Apartment();
 		ApartmentDto apartmentDto = postDto.getApartment();
 		apartment.setFloor(apartmentDto.getFloor());
 		apartment.setLength(apartmentDto.getLength());
 		apartment.setWidth(apartmentDto.getWidth());
 		apartment.setApartmentType(apartmentDto.getApartmentType());	
-		post.setApartment(apartment);
-		List<Picture> pictures = new ArrayList<>();
+		apartment.setPost(savedPost);
+		apartmentRepository.save(apartment);
 		postDto.getPictures().stream().forEach(pictureDto -> {
 			Picture picture = new Picture();
 			picture.setId(pictureDto.getId());
 			picture.setUrl(pictureDto.getUrl());
-			pictures.add(picture);
-		});
-		post.setPictures(pictures);
-		post.setUser(user);
-		Post savedPost = postRepository.save(post);
-		apartment.setPost(savedPost);
-		apartmentRepository.save(apartment);
-		pictures.forEach(picture -> {
 			picture.setPost(savedPost);
-			pictureRepository.save(picture);
+			pictureRepository.save(picture);	
 		});
+		
 		return postMapper.mapToDto(savedPost);
 	}
 
@@ -85,6 +90,35 @@ public class PostServiceImpl implements PostService{
 		Post post = postRepository.findById(id)
 				.orElseThrow(() -> new RecordNotFoundException("Post not found with id : " + id));
 		return postMapper.mapToDto(post);
+	}
+
+	@Override
+	public Page<AllPostDto> getAllPosts(int page, int limit, Long userId) {
+		if (page > 0) {
+			page = page - 1;
+		}
+		Pageable pageble = PageRequest.of(page, limit);
+		return postRepository.findAllPageDto(pageble, userId);
+	}
+
+	@Override
+	public UserDto getUserFromPost(Long id) {
+		User user = postRepository.getUserByPostId(id);
+		return userMapper.mapToUserDto(user);
+	}
+
+	@Override
+	public void deletePost(Long id, Long userId) {
+		Post post = postRepository.findById(id)
+				.orElseThrow(() -> new RecordNotFoundException("Post Not found wiht ID : " + id));
+		User user = userRepository.findById(userId).get();
+		if (!post.getUser().equals(user)) {
+			throw new UnauthorizedActionException("You are not authorized to delete this post");
+		}
+		post.getPictures().stream().forEach(i -> {
+			imageUploadService.deleteImage(i.getUrl(), "post_photos");
+		});
+		postRepository.delete(post);
 	}
 
 }

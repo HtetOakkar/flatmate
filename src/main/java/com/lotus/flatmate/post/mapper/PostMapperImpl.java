@@ -1,13 +1,21 @@
 package com.lotus.flatmate.post.mapper;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
 import com.lotus.flatmate.aparment.mapper.ApartmentMapper;
 import com.lotus.flatmate.picture.mapper.PictureMapper;
+import com.lotus.flatmate.post.dto.AllPostDto;
 import com.lotus.flatmate.post.dto.PostDto;
 import com.lotus.flatmate.post.entity.Post;
 import com.lotus.flatmate.post.request.PostRequest;
 import com.lotus.flatmate.post.response.PostDetailsResponse;
+import com.lotus.flatmate.post.response.PostPaginationResponse;
+import com.lotus.flatmate.post.response.PostUserResponse;
+import com.lotus.flatmate.user.dto.UserDto;
 
 import lombok.RequiredArgsConstructor;
 
@@ -72,7 +80,7 @@ public class PostMapperImpl implements PostMapper{
 	}
 
 	@Override
-	public PostDetailsResponse mapToResponse(PostDto postDto) {
+	public PostDetailsResponse mapToResponse(PostDto postDto, UserDto userDto) {
 		PostDetailsResponse response = new PostDetailsResponse();
 		response.setId(postDto.getId());
 		response.setContract(postDto.getContract());
@@ -86,6 +94,43 @@ public class PostMapperImpl implements PostMapper{
 		response.setCreatedAt(postDto.getCreatedAt());
 		response.setApartment(apartmentMapper.mapToResponse(postDto.getApartment()));
 		response.setPictures(postDto.getPictures().stream().map(pictureMapper::mapToResponse).toList());
+		PostUserResponse postOwner = new PostUserResponse(userDto.getId(), userDto.getUsername(), userDto.getMobileNumber(), userDto.getProfileUrl());
+		response.setPostOwner(postOwner);
+		return response;
+	}
+
+	@Override
+	public PostPaginationResponse mapToPostPageResponse(Page<AllPostDto> postPage) {
+		List<PostDetailsResponse> postsResponses = new ArrayList<>();
+		for (AllPostDto allPostDto : postPage.getContent()) {
+			PostDetailsResponse response = new PostDetailsResponse();
+			response.setId(allPostDto.getId());
+			response.setContract(allPostDto.getContract());
+			response.setDescription(allPostDto.getDescription());
+			response.setPrice(allPostDto.getPrice());
+			response.setTenants(allPostDto.getTenants());
+			response.setState(allPostDto.getState());
+			response.setTownship(allPostDto.getTownship());
+			response.setAdditional(allPostDto.getAdditional());
+			response.setCreatedAt(allPostDto.getCreatedAt());
+			response.setUpdatedAt(allPostDto.getUpdatedAt());
+			response.setApartment(apartmentMapper.mapToResponse(allPostDto.getApartment()));
+			response.setPictures(allPostDto.getPictures().stream().map(pictureMapper::mapToResponse).toList());
+			PostUserResponse postOwner = new PostUserResponse(allPostDto.getUser().getId(), allPostDto.getUser().getUsername(), allPostDto.getUser().getMobileNumber(), allPostDto.getUser().getProfileUrl());
+			response.setPostOwner(postOwner);
+			postsResponses.add(response);
+		}
+		
+		PostPaginationResponse response = new PostPaginationResponse();
+		response.setPosts(postsResponses);
+		response.setTotalItems(postPage.getTotalElements());
+		response.setTotalPages(postPage.getTotalPages());
+		response.setCurrentPage(postPage.getNumber() + 1);
+		if (postPage.getNumber() < postPage.getTotalPages() - 1) {
+			response.setNextPage(postPage.getNumber() + 2);
+		} else {
+			response.setNextPage(0);
+		}
 		return response;
 	}
 

@@ -2,6 +2,7 @@ package com.lotus.flatmate.picture.mapper;
 
 import org.springframework.stereotype.Component;
 
+import com.lotus.flatmate.picture.dto.AllPictureDto;
 import com.lotus.flatmate.picture.dto.PictureDto;
 import com.lotus.flatmate.picture.entity.Picture;
 import com.lotus.flatmate.picture.response.PictureResponse;
@@ -33,6 +34,17 @@ public class PictureMapperImpl implements PictureMapper{
 		PictureResponse response = new PictureResponse();
 		response.setId(pictureDto.getId());
 		response.setUrl(pictureDto.getUrl());
+		return response;
+	}
+
+	@Override
+	public PictureResponse mapToResponse(AllPictureDto picture) {
+		if (picture == null) {
+			return null;
+		}
+		PictureResponse response = new PictureResponse();
+		response.setId(picture.getId());
+		response.setUrl(picture.getUrl());
 		return response;
 	}
 

@@ -40,7 +40,7 @@ public class ImageUploadServiceImpl implements ImageUploadService {
 	@Override
 	public String uploadImage(MultipartFile image, String folderName) throws IOException {
 		UUID uuid = UUID.randomUUID();
-		String fileName = image.getOriginalFilename().replace(" ", "_");
+		String fileName = "image-" + uuid.toString().replace("-", "");
 		String filePath = folderName + "/" + fileName;
 		Map<String, String> map = new HashMap<>();
 		map.put("firebaseStorageDownloadTokens", uuid.toString());
