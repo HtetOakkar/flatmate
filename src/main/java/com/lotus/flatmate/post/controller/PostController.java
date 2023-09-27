@@ -89,9 +89,9 @@ public class PostController {
 	
 	@GetMapping
 	@PreAuthorize("hasRole('ROLE_USER')")
-	public PostPaginationResponse getAllPost(@RequestParam(name = "page", required = true) int page,
-			@RequestParam(defaultValue = "10") int limit, @CurrentUser UserPrincipal userPrincipal) {
-		Page<AllPostDto> postPage = postService.getAllPosts(page, limit, userPrincipal.getId());		
+	public PostPaginationResponse getAllPost(@RequestParam(name = "cursor", required = false) Long cursor,
+			@RequestParam(defaultValue = "10", required = false) int limit, @CurrentUser UserPrincipal userPrincipal) {
+		Page<AllPostDto> postPage = postService.getAllPosts(cursor , limit, userPrincipal.getId());		
 		return postMapper.mapToPostPageResponse(postPage);
 	}
 	

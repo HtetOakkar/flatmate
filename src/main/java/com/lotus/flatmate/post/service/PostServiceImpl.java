@@ -1,6 +1,9 @@
 package com.lotus.flatmate.post.service;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -66,15 +69,16 @@ public class PostServiceImpl implements PostService{
 		apartment.setWidth(apartmentDto.getWidth());
 		apartment.setApartmentType(apartmentDto.getApartmentType());	
 		apartment.setPost(savedPost);
-		apartmentRepository.save(apartment);
+		savedPost.setApartment(apartmentRepository.save(apartment));
+		List<Picture> pictures = new ArrayList<>();
 		postDto.getPictures().stream().forEach(pictureDto -> {
 			Picture picture = new Picture();
 			picture.setId(pictureDto.getId());
 			picture.setUrl(pictureDto.getUrl());
 			picture.setPost(savedPost);
-			pictureRepository.save(picture);	
+			pictures.add(pictureRepository.save(picture));
 		});
-		
+		savedPost.setPictures(pictures);
 		return postMapper.mapToDto(savedPost);
 	}
 
@@ -82,7 +86,9 @@ public class PostServiceImpl implements PostService{
 	public List<PostDto> getUserPosts(Long userId) {
 		User user = userRepository.findById(userId)
 				.orElseThrow(() -> new RecordNotFoundException("User not found with id : " + userId));
-		return user.getPosts().stream().map(postMapper::mapToDto).toList();
+		List<PostDto> postDtos = user.getPosts().stream().map(postMapper::mapToDto).collect(Collectors.toList());
+		postDtos.sort(Comparator.comparingLong(PostDto::getId).reversed());
+		return postDtos;
 	}
 
 	@Override
@@ -93,12 +99,12 @@ public class PostServiceImpl implements PostService{
 	}
 
 	@Override
-	public Page<AllPostDto> getAllPosts(int page, int limit, Long userId) {
-		if (page > 0) {
-			page = page - 1;
+	public Page<AllPostDto> getAllPosts(Long cursor, int limit, Long userId) {
+		if (cursor == null) {
+			cursor = postRepository.getLargestId() + 1;
 		}
-		Pageable pageble = PageRequest.of(page, limit);
-		return postRepository.findAllPageDto(pageble, userId);
+		Pageable pageble = PageRequest.of(0, limit);
+		return postRepository.findAllPageDto(cursor, pageble, userId);
 	}
 
 	@Override
@@ -120,5 +126,6 @@ public class PostServiceImpl implements PostService{
 		});
 		postRepository.delete(post);
 	}
+
 
 }

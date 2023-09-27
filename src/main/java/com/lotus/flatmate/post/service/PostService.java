@@ -16,7 +16,7 @@ public interface PostService {
 
 	PostDto getPostDetails(Long id);
 
-	Page<AllPostDto> getAllPosts(int page, int limit, Long userId);
+	Page<AllPostDto> getAllPosts(Long cursor, int limit, Long userId);
 
 	UserDto getUserFromPost(Long id);
 

@@ -123,14 +123,12 @@ public class PostMapperImpl implements PostMapper{
 		
 		PostPaginationResponse response = new PostPaginationResponse();
 		response.setPosts(postsResponses);
-		response.setTotalItems(postPage.getTotalElements());
-		response.setTotalPages(postPage.getTotalPages());
-		response.setCurrentPage(postPage.getNumber() + 1);
-		if (postPage.getNumber() < postPage.getTotalPages() - 1) {
-			response.setNextPage(postPage.getNumber() + 2);
+		if (postPage.hasNext()) {
+			response.setCursor(postsResponses.get(postsResponses.size() - 1).getId());
 		} else {
-			response.setNextPage(0);
+			response.setCursor(0L);
 		}
+		response.setHasNext(postPage.hasNext());
 		return response;
 	}
 

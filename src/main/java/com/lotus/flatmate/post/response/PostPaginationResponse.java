@@ -11,12 +11,7 @@ import lombok.Setter;
 @Setter
 public class PostPaginationResponse {
 	private List<PostDetailsResponse> posts;
-	@JsonProperty("total_pages")
-	private int totalPages;
-	@JsonProperty("total_items")
-	private long totalItems;
-	@JsonProperty("current_page")
-	private int currentPage;
-	@JsonProperty("next_page")
-	private int nextPage;
+	private Long cursor;
+	@JsonProperty("has_next")
+	private boolean hasNext;
 }
