@@ -1,42 +1,40 @@
-package com.lotus.flatmate.exception;
+package com.lotus.flatmate.model.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(HttpStatus.BAD_REQUEST)
-public class VerificationCodeMismatchException extends RuntimeException{
+@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+public class AppException extends RuntimeException{
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public VerificationCodeMismatchException() {
+	public AppException() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	public VerificationCodeMismatchException(String message, Throwable cause, boolean enableSuppression,
-			boolean writableStackTrace) {
+	public AppException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
 		super(message, cause, enableSuppression, writableStackTrace);
 		// TODO Auto-generated constructor stub
 	}
 
-	public VerificationCodeMismatchException(String message, Throwable cause) {
+	public AppException(String message, Throwable cause) {
 		super(message, cause);
 		// TODO Auto-generated constructor stub
 	}
 
-	public VerificationCodeMismatchException(String message) {
+	public AppException(String message) {
 		super(message);
 		// TODO Auto-generated constructor stub
 	}
 
-	public VerificationCodeMismatchException(Throwable cause) {
+	public AppException(Throwable cause) {
 		super(cause);
 		// TODO Auto-generated constructor stub
 	}
-	
-	
 
+	
 }

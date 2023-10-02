@@ -1,5 +1,6 @@
 package com.lotus.flatmate.user.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,5 +16,8 @@ public interface UserRepository extends JpaRepository<User, Long>{
 	Optional<User> findByEmail(String email);
 
 	boolean existsByEmail(String email);
+
+	@Query(value = "SELECT u FROM User u WHERE u.username LIKE %:key% AND u.id != :currentUserId ORDER BY u.username ASC")
+	List<User> findByLike(String key, Long currentUserId);
 
 }

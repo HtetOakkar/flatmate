@@ -4,6 +4,7 @@ import java.time.Instant;
 import java.util.List;
 
 import com.lotus.flatmate.post.dto.PostDto;
+import com.lotus.flatmate.post.dto.SavedPostDto;
 import com.lotus.flatmate.role.dto.RoleDto;
 import com.lotus.flatmate.socialContact.dto.SocialContactDto;
 import com.lotus.flatmate.user.entity.LoginProvider;
@@ -26,4 +27,5 @@ public class UserDto {
 	private List<RoleDto> roleDtos;
 	private List<SocialContactDto> socialContactDtos;
 	private List<PostDto> postDtos;
+	private List<SavedPostDto> savedPostDtos;
 }

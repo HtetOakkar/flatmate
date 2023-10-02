@@ -1,4 +1,4 @@
-package com.lotus.flatmate.exception;
+package com.lotus.flatmate.model.exception;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -73,5 +73,14 @@ public class GlobalExceptionHandler {
 		response.put("message", e.getMessage());
 		response.put("timestamp", new Date(new Date().getTime()));
 		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+	}
+	
+	@ExceptionHandler(BadRequestException.class)
+	public ResponseEntity<?> handleBadRequestException(BadRequestException e) {
+		Map<String, Object> response = new HashMap<>();
+		response.put("status", HttpStatus.BAD_REQUEST);
+		response.put("message", e.getMessage());
+		response.put("timestamp", new Date(new Date().getTime()));
+		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
 	}
 }

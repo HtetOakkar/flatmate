@@ -26,7 +26,7 @@ import com.lotus.flatmate.auth.response.CodeVerificationResponse;
 import com.lotus.flatmate.auth.response.JwtAuthenticationResponse;
 import com.lotus.flatmate.auth.response.VerificationResponse;
 import com.lotus.flatmate.auth.service.AuthService;
-import com.lotus.flatmate.exception.PasswordMismatchException;
+import com.lotus.flatmate.model.exception.PasswordMismatchException;
 import com.lotus.flatmate.refreshToken.dto.RefreshTokenDto;
 import com.lotus.flatmate.refreshToken.service.RefreshTokenService;
 import com.lotus.flatmate.security.JwtTokenProvider;

@@ -1,13 +1,20 @@
 package com.lotus.flatmate.user.mapper.impl;
 
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import com.lotus.flatmate.auth.request.RegistrationRequest;
+import com.lotus.flatmate.post.mapper.PostMapper;
+import com.lotus.flatmate.post.response.PostResponse;
 import com.lotus.flatmate.socialContact.mapper.SocialContactMapper;
 import com.lotus.flatmate.user.dto.UserDto;
 import com.lotus.flatmate.user.entity.User;
 import com.lotus.flatmate.user.mapper.UserMapper;
+import com.lotus.flatmate.user.response.UserDetailsResponse;
 import com.lotus.flatmate.user.response.UserProfileResponse;
 
 import jakarta.validation.Valid;
@@ -20,6 +27,8 @@ public class UserMapperImpl implements UserMapper {
 	private final PasswordEncoder passwordEncoder;
 	
 	private final SocialContactMapper socialContactMapper;
+	
+	private final PostMapper postMapper;
 
 	@Override
 	public UserDto mapToUserDto(@Valid RegistrationRequest request) {
@@ -49,6 +58,12 @@ public class UserMapperImpl implements UserMapper {
 		if (user.getSocialContacts().size() > 0) {
 			userDto.setSocialContactDtos(user.getSocialContacts().stream().map(socialContactMapper::mapToSocialContactDto).toList());
 		}
+		if (user.getPosts().size() > 0) {
+			userDto.setPostDtos(user.getPosts().stream().map(postMapper::mapToDto).toList());
+		}
+		if (user.getSavedPosts().size() > 0) {
+			userDto.setSavedPostDtos(user.getSavedPosts().stream().map(postMapper::mapToSavedPostDto).toList());
+		}
 		return userDto;
 	}
 
@@ -62,6 +77,36 @@ public class UserMapperImpl implements UserMapper {
 		response.setProfileUrl(userDto.getProfileUrl());
 		if (userDto.getSocialContactDtos() != null && !userDto.getSocialContactDtos().isEmpty()) {
 			response.setSocialContacts(userDto.getSocialContactDtos().stream().map(socialContactMapper::mapToSocialContactResponse).toList());
+		}
+		return response;
+	}
+
+	@Override
+	public UserDetailsResponse mapToUserDetailsResponse(UserDto userDto,  UserDto currentUserDto) {
+		UserDetailsResponse response = new UserDetailsResponse();
+		response.setId(userDto.getId());
+		response.setUsername(userDto.getUsername());
+		response.setMobileNumber(userDto.getMobileNumber());
+		response.setProfileUrl(userDto.getProfileUrl());
+		if (userDto.getSocialContactDtos() != null && !userDto.getSocialContactDtos().isEmpty()) {
+			response.setSocialContacts(userDto.getSocialContactDtos().stream().map(socialContactMapper::mapToSocialContactResponse).toList());
+		}
+		
+		if (userDto.getPostDtos() != null && !userDto.getPostDtos().isEmpty()) {
+			List<PostResponse> postResponses = userDto.getPostDtos().stream().map(p -> {
+				PostResponse postResponse = postMapper.mapToPostResponse(p);
+				if (currentUserDto.getSavedPostDtos() != null && !currentUserDto.getSavedPostDtos().isEmpty()) {
+					currentUserDto.getSavedPostDtos().stream().forEach(s -> {
+						if (s.getPostDto().getId() == p.getId()) {
+							postResponse.setSaved(true);
+						} 	
+					});
+				}
+				
+				return postResponse;
+			}).collect(Collectors.toList());
+			postResponses.sort(Comparator.comparingLong(PostResponse::getId).reversed());
+			response.setPosts(postResponses);
 		}
 		return response;
 	}

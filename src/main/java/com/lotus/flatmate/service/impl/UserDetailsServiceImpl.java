@@ -5,8 +5,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.lotus.flatmate.exception.NonVerifiedException;
-import com.lotus.flatmate.exception.RecordNotFoundException;
+import com.lotus.flatmate.model.exception.NonVerifiedException;
+import com.lotus.flatmate.model.exception.RecordNotFoundException;
 import com.lotus.flatmate.security.UserPrincipal;
 import com.lotus.flatmate.user.entity.User;
 import com.lotus.flatmate.user.repository.UserRepository;

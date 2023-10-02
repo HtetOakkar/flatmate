@@ -1,13 +1,14 @@
 package com.lotus.flatmate.user.service;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
 import com.lotus.flatmate.auth.request.VerificationRequest;
 import com.lotus.flatmate.auth.response.VerificationResponse;
-import com.lotus.flatmate.exception.RecordNotFoundException;
-import com.lotus.flatmate.exception.VerificationCodeMismatchException;
+import com.lotus.flatmate.model.exception.RecordNotFoundException;
+import com.lotus.flatmate.model.exception.VerificationCodeMismatchException;
 import com.lotus.flatmate.security.JwtTokenProvider;
 import com.lotus.flatmate.service.MailService;
 import com.lotus.flatmate.user.dto.UserDto;
@@ -113,6 +114,12 @@ public class UserSeviceImpl implements UserService {
 		User user = userRepository.findById(id).get();
 		user.setProfileUrl(request.getImageUrl());
 		return userMapper.mapToUserDto(userRepository.save(user));
+	}
+
+	@Override
+	public List<UserDto> searchUsers(String key, Long currentUserId) {
+		List<User> users = userRepository.findByLike(key, currentUserId);
+		return users.stream().map(userMapper::mapToUserDto).toList();
 	}
 
 }

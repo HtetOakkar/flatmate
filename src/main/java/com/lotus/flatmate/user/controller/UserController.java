@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,7 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.lotus.flatmate.auth.request.VerificationRequest;
 import com.lotus.flatmate.auth.response.ApiResponse;
 import com.lotus.flatmate.auth.response.VerificationResponse;
-import com.lotus.flatmate.exception.PasswordMismatchException;
+import com.lotus.flatmate.model.exception.PasswordMismatchException;
 import com.lotus.flatmate.security.CurrentUser;
 import com.lotus.flatmate.security.UserPrincipal;
 import com.lotus.flatmate.service.ImageUploadService;
@@ -38,6 +39,7 @@ import com.lotus.flatmate.user.request.CheckEmailRequest;
 import com.lotus.flatmate.user.request.ProfileUploadRequest;
 import com.lotus.flatmate.user.request.ResetPasswordRequest;
 import com.lotus.flatmate.user.response.OtpVerificationResponse;
+import com.lotus.flatmate.user.response.UserDetailsResponse;
 import com.lotus.flatmate.user.response.UserProfileResponse;
 import com.lotus.flatmate.user.service.UserService;
 
@@ -167,4 +169,19 @@ public class UserController {
 		return userMapper.mapToProfileResponse(userDto);
 	}
 	
+	@GetMapping("/{id}")
+	@PreAuthorize("hasRole('ROLE_USER')")
+	public UserDetailsResponse getUserDetails(@PathVariable Long id, @CurrentUser UserPrincipal currentUser) {
+		UserDto userDto = userService.getById(id);
+		UserDto currentUserDto = userService.getById(currentUser.getId());
+		return userMapper.mapToUserDetailsResponse(userDto, currentUserDto);
+	}
+	
+	@GetMapping("/search")
+	@PreAuthorize("hasRole('ROLE_USER')")
+	public List<UserDetailsResponse> searchUsers(@RequestParam(value = "k") String key, @CurrentUser UserPrincipal currentUser) {
+		List<UserDto> userDtos = userService.searchUsers(key, currentUser.getId());
+		UserDto currentUserDto = userService.getById(currentUser.getId());
+		return userDtos.stream().map(userDto -> userMapper.mapToUserDetailsResponse(userDto, currentUserDto)).toList();
+	}
 }

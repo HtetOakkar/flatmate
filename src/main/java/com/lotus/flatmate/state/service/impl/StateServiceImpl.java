@@ -12,7 +12,7 @@ import org.apache.commons.csv.CSVRecord;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.lotus.flatmate.exception.RecordNotFoundException;
+import com.lotus.flatmate.model.exception.RecordNotFoundException;
 import com.lotus.flatmate.state.dto.StateDto;
 import com.lotus.flatmate.state.entity.State;
 import com.lotus.flatmate.state.mapper.StateMapper;

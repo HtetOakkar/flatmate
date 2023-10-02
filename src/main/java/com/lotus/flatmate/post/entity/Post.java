@@ -74,4 +74,7 @@ public class Post {
 	
 	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "post")
 	private Apartment apartment;
+	
+	@OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, mappedBy = "post")
+	private List<SavedPost> savedPosts;
 }

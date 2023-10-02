@@ -1,4 +1,4 @@
-package com.lotus.flatmate.exception;
+package com.lotus.flatmate.model.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

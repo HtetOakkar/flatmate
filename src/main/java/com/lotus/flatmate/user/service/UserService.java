@@ -1,5 +1,7 @@
 package com.lotus.flatmate.user.service;
 
+import java.util.List;
+
 import com.lotus.flatmate.auth.request.VerificationRequest;
 import com.lotus.flatmate.auth.response.VerificationResponse;
 import com.lotus.flatmate.user.dto.UserDto;
@@ -27,5 +29,7 @@ public interface UserService {
 	UserDto changeMobileNumber(String mobileNumber, Long id);
 
 	UserDto uploadProfilePhoto(ProfileUploadRequest request, Long id);
+
+	List<UserDto> searchUsers(String key, Long currentUserId);
 
 }

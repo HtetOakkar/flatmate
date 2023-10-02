@@ -4,7 +4,7 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
-import com.lotus.flatmate.exception.RecordNotFoundException;
+import com.lotus.flatmate.model.exception.RecordNotFoundException;
 import com.lotus.flatmate.refreshToken.dto.RefreshTokenDto;
 import com.lotus.flatmate.refreshToken.entity.RefreshToken;
 import com.lotus.flatmate.refreshToken.mapper.RefreshTokenMapper;

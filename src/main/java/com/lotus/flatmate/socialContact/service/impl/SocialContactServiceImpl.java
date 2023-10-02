@@ -2,8 +2,8 @@ package com.lotus.flatmate.socialContact.service.impl;
 
 import org.springframework.stereotype.Service;
 
-import com.lotus.flatmate.exception.RecordNotFoundException;
-import com.lotus.flatmate.exception.UnauthorizedActionException;
+import com.lotus.flatmate.model.exception.RecordNotFoundException;
+import com.lotus.flatmate.model.exception.UnauthorizedActionException;
 import com.lotus.flatmate.socialContact.dto.SocialContactDto;
 import com.lotus.flatmate.socialContact.entity.SocialContact;
 import com.lotus.flatmate.socialContact.mapper.SocialContactMapper;
