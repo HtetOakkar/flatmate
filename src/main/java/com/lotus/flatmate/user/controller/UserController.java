@@ -115,9 +115,11 @@ public class UserController {
 	
 	@DeleteMapping("/me/social-contact/{id}")
 	@PreAuthorize("hasRole('ROLE_USER')")
-	public ApiResponse deleteSocialContact(@CurrentUser UserPrincipal userPrincipal, @PathVariable Long id) {
+	public UserProfileResponse deleteSocialContact(@CurrentUser UserPrincipal userPrincipal, @PathVariable Long id) {
 		socialContactService.deleteSocialContact(id, userPrincipal.getId());
-		return new ApiResponse(true, "Your social media contact is successfully deleted.");
+		UserDto userDto = userService.getById(userPrincipal.getId());
+		
+		return userMapper.mapToProfileResponse(userDto);
 	}
 
 	@PutMapping("/me/password")
