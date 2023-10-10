@@ -33,8 +33,9 @@ build/
 ### VS Code ###
 .vscode/
 
+.env
 !**/src/main/resources/application.properties
-!**/src/main/resources/flatmate-firebase-service-account.json
+**/src/main/resources/flatmate-firebase-service-account.json
 
 # Created by https://www.toptal.com/developers/gitignore/api/eclipse
 # Edit at https://www.toptal.com/developers/gitignore?templates=eclipse
