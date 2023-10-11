@@ -35,7 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ImageUploadServiceImpl implements ImageUploadService {
 
 	private final StorageClient storageClient;
-	
+
 	private final ImageResizeUtil imageResizeUtil;
 
 	@Value("${firebase.storage.bucket}")
@@ -49,31 +49,34 @@ public class ImageUploadServiceImpl implements ImageUploadService {
 	@Override
 	public String uploadImage(MultipartFile image, String folderName) throws IOException, ImageReadException {
 		UUID uuid = UUID.randomUUID();
-		String fileName = "image-" + uuid.toString().replace("-", "") + Instant.now().toString().replace("-", "").replace(".", "").replace(":", "");
+		String fileName = "image-" + uuid.toString().replace("-", "")
+				+ Instant.now().toString().replace("-", "").replace(".", "").replace(":", "");
 		String filePath = folderName + "/" + fileName;
 		Map<String, String> map = new HashMap<>();
 		map.put("firebaseStorageDownloadTokens", uuid.toString());
 		BlobId blobId = BlobId.of(BUCKET_NAME, filePath);
 		BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setMetadata(map).setContentType("media").build();
 		Storage storage = storageClient.bucket(BUCKET_NAME).getStorage();
-
-		File file = convertToFile(image, fileName);
-		
-		Path path = file.toPath();
 		log.info("Uploading image....");
+		File file = convertToFile(image, fileName);
+
+		Path path = file.toPath();
+
 		storage.create(blobInfo, Files.readAllBytes(path));
-		log.info("Uploaded.");
 		file.delete();
+
+		log.info("Uploaded.");
+
 		return "https://firebasestorage.googleapis.com/v0/b/" + BUCKET_NAME + "/o/" + folderName + "%2F" + fileName
 				+ "?alt=media&token=" + uuid.toString();
 	}
 
 	private File convertToFile(MultipartFile multipartFile, String fileName) throws IOException, ImageReadException {
 		File tempFile = new File(Objects.requireNonNull(fileName));
-		
+
 		BufferedImage resizedImage = imageResizeUtil.resizeImage(multipartFile, fileName);
 		FileOutputStream fos = new FileOutputStream(tempFile);
-		ImageIO.write(resizedImage, "jpg" , tempFile);
+		ImageIO.write(resizedImage, "jpg", tempFile);
 		fos.close();
 		return tempFile;
 	}
@@ -84,11 +87,11 @@ public class ImageUploadServiceImpl implements ImageUploadService {
 		try {
 			uri = new URI(fileUrl);
 			String path = uri.getPath();
-			
+
 			String fileName = retiveFileNameFromUrl(path);
 			if (uri.getHost().equals("firebasestorage.googleapis.com")) {
 				log.info("Deleting image...");
-				BlobId blobId = BlobId.of(BUCKET_NAME, folderName + "/" +fileName);
+				BlobId blobId = BlobId.of(BUCKET_NAME, folderName + "/" + fileName);
 				Storage storage = storageClient.bucket(BUCKET_NAME).getStorage();
 				boolean success = storage.delete(blobId);
 				if (success) {
@@ -107,7 +110,7 @@ public class ImageUploadServiceImpl implements ImageUploadService {
 		String[] segments = path.split("/");
 		if (segments.length > 0) {
 			return segments[segments.length - 1];
-		} 
+		}
 		return null;
 
 	}

@@ -72,7 +72,7 @@ public class AuthController {
 			Authentication authentication = authenticationManager
 					.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
 			UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
-			RefreshTokenDto newRefreshToken = refreshTokenService.generateRefreshToken(userPrincipal.getId());
+			RefreshTokenDto newRefreshToken = refreshTokenService.generateRefreshToken(userPrincipal.getId(), request.getDeviceId());
 			if (authentication.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_USER"))) {
 				SecurityContextHolder.getContext().setAuthentication(authentication);
 				String jwtToken = tokenProvider.generateJwtToken(authentication);

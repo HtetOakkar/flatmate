@@ -15,7 +15,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
@@ -37,10 +37,13 @@ public class RefreshToken {
 	@CreationTimestamp
 	private Instant createdAt;
 	
+	@Column(name = "device_id", unique = true)
+	private String deviceId;
+	
 	@UpdateTimestamp
 	private Instant updatedAt;
 	
-	@OneToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "user_id", referencedColumnName = "user_id")
 	private User user;
 }

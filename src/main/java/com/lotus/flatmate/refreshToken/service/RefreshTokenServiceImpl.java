@@ -1,5 +1,6 @@
 package com.lotus.flatmate.refreshToken.service;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -25,22 +26,22 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 	private final RefreshTokenMapper refreshTokenMapper;
 
 	@Override
-	public RefreshTokenDto generateRefreshToken(Long userId) {
+	public RefreshTokenDto generateRefreshToken(Long userId, String deviceId) {
 		User user = userRepository.findById(userId)
 				.orElseThrow(() -> new RecordNotFoundException("User with id '" + "' not found!"));
+		Optional<RefreshToken> refreshTokenOptional = refreshTokenRepository.findByDeviceId(deviceId);
 		String token = UUID.randomUUID().toString();
+		RefreshToken refreshToken = new RefreshToken();
 		
-		RefreshTokenDto refreshTokenDto = new RefreshTokenDto();
-		if (user.getRefreshToken() != null) {
-			user.getRefreshToken().setRefreshToken(token);
-			refreshTokenDto = refreshTokenMapper.mapToRefreshTokenDto(refreshTokenRepository.save(user.getRefreshToken()));
+		if (refreshTokenOptional.isPresent()) {
+			refreshToken = refreshTokenOptional.get();
 		} else {
-			RefreshToken refreshToken = new RefreshToken();
-			refreshToken.setRefreshToken(token);
-			refreshToken.setUser(user);
-			refreshTokenDto = refreshTokenMapper.mapToRefreshTokenDto(refreshTokenRepository.save(refreshToken));
+			refreshToken.setDeviceId(deviceId);
 		}
-		return refreshTokenDto;
+		
+		refreshToken.setRefreshToken(token);
+		refreshToken.setUser(user);
+		return refreshTokenMapper.mapToRefreshTokenDto(refreshTokenRepository.save(refreshToken));
 	}
 
 }

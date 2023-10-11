@@ -8,4 +8,5 @@ import lombok.Setter;
 public class RefreshTokenDto {
 	private Long id;
 	private String refreshToken;
+	private String deviceId;
 }

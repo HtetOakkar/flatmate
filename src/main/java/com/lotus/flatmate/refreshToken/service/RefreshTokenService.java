@@ -4,6 +4,6 @@ import com.lotus.flatmate.refreshToken.dto.RefreshTokenDto;
 
 public interface RefreshTokenService {
 
-	RefreshTokenDto generateRefreshToken(Long id);
+	RefreshTokenDto generateRefreshToken(Long id, String deviceId);
 
 }

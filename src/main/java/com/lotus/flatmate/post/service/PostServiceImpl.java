@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.imaging.ImageReadException;
@@ -110,7 +111,12 @@ public class PostServiceImpl implements PostService {
 	@Override
 	public Page<AllPostDto> getAllPosts(Long cursor, int limit, Long userId) {
 		if (cursor == null) {
-			cursor = postRepository.getLargestId() + 1;
+			Optional<Long> latestPostId = postRepository.getLargestId();
+			if (latestPostId.isPresent()) {
+				cursor = latestPostId.get() + 1;
+			} else {
+				throw new RecordNotFoundException("There is no post for this moment.");
+			}
 		}
 		Pageable pageble = PageRequest.of(0, limit);
 		return postRepository.findAllPageDto(cursor, pageble, userId);

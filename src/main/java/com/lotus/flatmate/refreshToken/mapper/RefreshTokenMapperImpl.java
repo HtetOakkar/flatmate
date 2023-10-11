@@ -13,6 +13,7 @@ public class RefreshTokenMapperImpl implements RefreshTokenMapper{
 		RefreshTokenDto refreshTokenDto = new RefreshTokenDto();
 		refreshTokenDto.setId(refreshToken.getId());
 		refreshTokenDto.setRefreshToken(refreshToken.getRefreshToken());
+		refreshTokenDto.setDeviceId(refreshToken.getDeviceId());
 		return refreshTokenDto;
 	}
 
