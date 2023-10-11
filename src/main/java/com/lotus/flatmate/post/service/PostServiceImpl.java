@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.imaging.ImageReadException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -137,7 +138,7 @@ public class PostServiceImpl implements PostService {
 
 	@Override
 	public PostDto updatePost(Long id, Long userId, MultipartFile[] images, PostUpdateRequest request)
-			throws IOException {
+			throws IOException, ImageReadException {
 
 		User user = userRepository.findById(userId).get();
 		Post post = postRepository.findById(id)

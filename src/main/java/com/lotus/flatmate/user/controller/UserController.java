@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.imaging.ImageReadException;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -154,7 +155,7 @@ public class UserController {
 	@PreAuthorize("hasRole('ROLE_USER')")
 	public UserProfileResponse uploadUserProfilePhoto(@CurrentUser UserPrincipal userPrincipal,
 			@RequestPart(value = "image", required = false) MultipartFile image,
-			@RequestPart(value = "data") ProfileUploadRequest request) throws IOException {
+			@RequestPart(value = "data") ProfileUploadRequest request) throws IOException, ImageReadException {
 		if (!image.isEmpty()) {
 			String folderName = "profile_photos";
 			if (request.getImageUrl() != null) {

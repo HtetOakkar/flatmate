@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.imaging.ImageReadException;
 import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -56,7 +57,7 @@ public class PostController {
 	@PreAuthorize("hasRole('ROLE_USER')")
 	public PostDetailsResponse createPost(@CurrentUser UserPrincipal userPrincipal,
 			@RequestPart(value = "images") MultipartFile[] images, @RequestPart(value = "data") PostRequest request)
-			throws IOException {
+			throws IOException, ImageReadException {
 		List<PictureDto> pictureDtos = new ArrayList<>();
 		if (images.length > 0) {
 
@@ -116,7 +117,7 @@ public class PostController {
 	@PreAuthorize("hasRole('ROLE_USER')")
 	public PostResponse updatePost(@RequestPart(value = "images") MultipartFile[] images,
 			@RequestPart(value = "data") PostUpdateRequest request, @PathVariable Long id,
-			@CurrentUser UserPrincipal currentUser) throws IOException {
+			@CurrentUser UserPrincipal currentUser) throws IOException, ImageReadException {
 
 		PostDto postDto = postService.updatePost(id, currentUser.getId(), images, request);
 		return postMapper.mapToPostResponse(postDto);

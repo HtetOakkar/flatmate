@@ -3,6 +3,7 @@ package com.lotus.flatmate.post.service;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.commons.imaging.ImageReadException;
 import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,7 +26,7 @@ public interface PostService {
 
 	void deletePost(Long id, Long userId);
 
-	PostDto updatePost(Long id, Long userId,  MultipartFile[] images, PostUpdateRequest request) throws IOException;
+	PostDto updatePost(Long id, Long userId,  MultipartFile[] images, PostUpdateRequest request) throws IOException, ImageReadException;
 
 	PostDto savePost(Long id, Long userId);
 
