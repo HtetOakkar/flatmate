@@ -97,7 +97,7 @@ public class ImageUploadServiceImpl implements ImageUploadService {
 				if (success) {
 					log.info("Image delete success...");
 				} else {
-					log.error("image delete failed...");
+					log.error("Image delete failed...");
 				}
 			}
 		} catch (URISyntaxException e) {
@@ -112,6 +112,5 @@ public class ImageUploadServiceImpl implements ImageUploadService {
 			return segments[segments.length - 1];
 		}
 		return null;
-
 	}
 }

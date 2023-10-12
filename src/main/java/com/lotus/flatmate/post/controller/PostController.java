@@ -157,4 +157,11 @@ public class PostController {
 		});
 		return responses;
 	}
+	
+	@PutMapping("/me/{id}")
+	@PreAuthorize("hasRole('ROLE_USER')")
+	public PostResponse upDateTenents(@CurrentUser UserPrincipal currentUser, @RequestParam(name = "tenant") int tenant, @PathVariable Long id) {
+		PostDto postDto = postService.updateTenant(tenant, id, currentUser.getId());
+		return postMapper.mapToPostResponse(postDto);
+	}
 }

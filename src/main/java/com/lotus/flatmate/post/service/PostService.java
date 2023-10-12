@@ -36,4 +36,6 @@ public interface PostService {
 
 	PostDto unsavePost(Long id, Long userId);
 
+	PostDto updateTenant(int tenant, Long id, Long userId);
+
 }

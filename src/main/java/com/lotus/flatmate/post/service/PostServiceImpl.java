@@ -226,4 +226,18 @@ public class PostServiceImpl implements PostService {
 		return postMapper.mapToDto(post);
 	}
 
+	@Override
+	public PostDto updateTenant(int tenant, Long id, Long userId) {
+		User user = userRepository.findById(userId).get();
+		Post post = postRepository.findById(id)
+				.orElseThrow(() -> new RecordNotFoundException("Post Not Found with id : " + id));
+		if (!post.getUser().equals(user)) {
+			throw new UnauthorizedActionException("You are not authorized to update this post.");
+		}
+		
+		post.setTenants(tenant);
+		
+		return postMapper.mapToDto(postRepository.save(post));
+	}
+
 }

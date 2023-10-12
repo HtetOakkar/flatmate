@@ -131,6 +131,6 @@ public class AuthServiceImpl implements AuthService {
 		String newRefreshToken = UUID.randomUUID().toString();
 		refreshToken.setRefreshToken(newRefreshToken);
 		refreshTokenRepository.save(refreshToken);
-		return new JwtAuthenticationResponse(jwtToken, new Date(new Date().getTime() + 86400 * 1000), newRefreshToken);
+		return new JwtAuthenticationResponse(jwtToken, new Date(new Date().getTime() + 60 * 1000), newRefreshToken);
 	}
 }

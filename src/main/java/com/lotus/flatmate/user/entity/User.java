@@ -45,10 +45,10 @@ public class User {
 	@Column(name = "user_id")
 	private Long id;
 
-	@Column(name = "username")
+	@Column(name = "username", length = 60)
 	private String username;
 
-	@Column(name = "email")
+	@Column(name = "email", unique = true, length = 60)
 	private String email;
 	
 	@Column(name = "profile_url", columnDefinition = "TEXT")
@@ -58,7 +58,7 @@ public class User {
 	@JsonIgnore
 	private String password;
 
-	@Column(name = "mobile_number")
+	@Column(name = "mobile_number", length = 60)
 	private String mobileNumber;
 	
 	@Column(updatable = false)
