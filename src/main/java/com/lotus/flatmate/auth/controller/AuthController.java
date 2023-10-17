@@ -68,7 +68,7 @@ public class AuthController {
 	@PostMapping("/login")
 	public ResponseEntity<?> userLogin(@Valid @RequestBody LoginRequest request) {
 		try {
-			Date expiration = new Date(System.currentTimeMillis() + 60 * 1000);
+			Date expiration = new Date(System.currentTimeMillis() + 86400 * 1000);
 			Authentication authentication = authenticationManager
 					.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
 			UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();

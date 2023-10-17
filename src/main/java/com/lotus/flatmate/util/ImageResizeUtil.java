@@ -6,8 +6,9 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 
+import javax.imageio.ImageIO;
+
 import org.apache.commons.imaging.ImageReadException;
-import org.apache.commons.imaging.Imaging;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,7 +19,8 @@ public class ImageResizeUtil {
 		int maxWidth = 1920;
 		int maxHeight = 1440;
 		InputStream inputStream = multipartFile.getInputStream();
-		BufferedImage originalImage = Imaging.getBufferedImage(inputStream, fileName);
+		BufferedImage originalImage = ImageIO.read(inputStream);
+//		BufferedImage originalImage = Imaging.getBufferedImage(inputStream, fileName);
 		
 		if (originalImage == null) {
 			throw new IOException("Image Input Error.");
