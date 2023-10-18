@@ -1,9 +1,6 @@
 package com.lotus.flatmate.model.exception;
 
 import java.time.Instant;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,10 +38,7 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(RecordNotFoundException.class)
 	public ResponseEntity<?> handleRecordNotFoundException(RecordNotFoundException e) {
-		Map<String, Object> response = new HashMap<>();
-		response.put("status", HttpStatus.NOT_FOUND);
-		response.put("message", e.getMessage());
-		response.put("timestamp", new Date(new Date().getTime()));
+		GlobalExceptionResponse response = new GlobalExceptionResponse(HttpStatus.NOT_FOUND, e.getMessage(), Instant.now());
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
 	}
 
