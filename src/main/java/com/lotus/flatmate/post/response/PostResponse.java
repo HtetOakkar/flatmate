@@ -5,7 +5,7 @@ import java.time.Instant;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.lotus.flatmate.aparment.response.ApartmentResponse;
+import com.lotus.flatmate.apartment.response.ApartmentResponse;
 import com.lotus.flatmate.picture.response.PictureResponse;
 
 import lombok.Getter;

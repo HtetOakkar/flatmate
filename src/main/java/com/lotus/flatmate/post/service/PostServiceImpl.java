@@ -1,10 +1,10 @@
 package com.lotus.flatmate.post.service;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.imaging.ImageReadException;
@@ -14,9 +14,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.lotus.flatmate.aparment.dto.ApartmentDto;
-import com.lotus.flatmate.aparment.entity.Apartment;
-import com.lotus.flatmate.aparment.repository.ApartmentRepository;
+import com.lotus.flatmate.apartment.dto.ApartmentDto;
+import com.lotus.flatmate.apartment.entity.Apartment;
+import com.lotus.flatmate.apartment.repository.ApartmentRepository;
 import com.lotus.flatmate.model.exception.BadRequestException;
 import com.lotus.flatmate.model.exception.RecordNotFoundException;
 import com.lotus.flatmate.model.exception.UnauthorizedActionException;
@@ -109,15 +109,8 @@ public class PostServiceImpl implements PostService {
 	}
 
 	@Override
-	public Page<AllPostDto> getAllPosts(Long cursor, int limit, Long userId) {
-		if (cursor == null) {
-			Optional<Long> latestPostId = postRepository.getLargestId();
-			if (latestPostId.isPresent()) {
-				cursor = latestPostId.get() + 1;
-			} else {
-				throw new RecordNotFoundException("There is no post for this moment.");
-			}
-		}
+	public Page<AllPostDto> getAllPosts(Instant cursor, int limit, Long userId) {
+		
 		Pageable pageble = PageRequest.of(0, limit);
 		return postRepository.findAllPageDto(cursor, pageble, userId);
 	}

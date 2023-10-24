@@ -1,6 +1,6 @@
-package com.lotus.flatmate.aparment.dto;
+package com.lotus.flatmate.apartment.dto;
 
-import com.lotus.flatmate.aparment.entity.ApartmentType;
+import com.lotus.flatmate.apartment.entity.ApartmentType;
 
 import lombok.Getter;
 import lombok.Setter;

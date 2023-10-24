@@ -1,14 +1,15 @@
-package com.lotus.flatmate.aparment.request;
+package com.lotus.flatmate.apartment.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.lotus.flatmate.aparment.entity.ApartmentType;
+import com.lotus.flatmate.apartment.entity.ApartmentType;
 
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class ApartmentRequest {
+public class ApartmentResponse {
+	private Long id;
 	private int floor;
 	private double length;
 	private double width;

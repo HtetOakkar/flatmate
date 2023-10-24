@@ -11,8 +11,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -52,14 +52,14 @@ public class AuthController {
 
 	private final JwtTokenProvider tokenProvider;
 
-	@PostMapping("/user/register")
+	@PostMapping("/users/register")
 	public ResponseEntity<?> registerUser(@Valid @RequestBody RegistrationRequest request) {
 		UserDto userDto = userMapper.mapToUserDto(request);
 		VerificationResponse response = authService.registerUser(userDto);
 		return ResponseEntity.ok(response);
 	}
 
-	@PutMapping("/user/verify")
+	@PatchMapping("/users/verify")
 	public ResponseEntity<?> verifyUser(@Valid @RequestBody VerificationRequest request) {
 		CodeVerificationResponse response = authService.verifyUser(request);
 		return ResponseEntity.ok(response);

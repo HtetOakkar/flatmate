@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.time.Instant;
 import java.util.List;
 
-import com.lotus.flatmate.aparment.dto.ApartmentDto;
+import com.lotus.flatmate.apartment.dto.ApartmentDto;
 import com.lotus.flatmate.picture.dto.PictureDto;
 
 import lombok.Getter;

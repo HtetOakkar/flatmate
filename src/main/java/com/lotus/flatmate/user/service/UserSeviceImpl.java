@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.lotus.flatmate.auth.request.VerificationRequest;
 import com.lotus.flatmate.auth.response.VerificationResponse;
+import com.lotus.flatmate.model.exception.RecordAlreadyExistException;
 import com.lotus.flatmate.model.exception.RecordNotFoundException;
 import com.lotus.flatmate.model.exception.VerificationCodeMismatchException;
 import com.lotus.flatmate.security.JwtTokenProvider;
@@ -25,17 +26,17 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class UserSeviceImpl implements UserService {
-	
+
 	private final UserRepository userRepository;
-	
+
 	private final UserMapper userMapper;
-	
+
 	private final MailService mailService;
-	
+
 	private final MailTemplate mailTemplate;
-	
+
 	private final JwtTokenProvider tokenProvider;
-	
+
 	private String generateOpt() {
 		return UUID.randomUUID().toString().replaceAll("[^0-9]", "").substring(0, 6);
 	}
@@ -46,7 +47,7 @@ public class UserSeviceImpl implements UserService {
 				.orElseThrow(() -> new RecordNotFoundException("User does not exist with email '" + email + "'."));
 		String otp = generateOpt();
 		String mailBody = mailTemplate.verificationMailTemplate(user.getUsername(), otp);
-		
+
 		user.getEmailVerification().setVerificationCode(otp);
 		userRepository.save(user);
 		mailService.sendEmail(email, "[" + otp + "] Verification code", mailBody);
@@ -55,12 +56,12 @@ public class UserSeviceImpl implements UserService {
 
 	@Override
 	public OtpVerificationResponse verifyOtp(@Valid VerificationRequest request) {
-		
-		User user = userRepository.findByEmail(request.getEmail())
-				.orElseThrow(() -> new RecordNotFoundException("User does not exist with email '" + request.getEmail() + "'."));
+
+		User user = userRepository.findByEmail(request.getEmail()).orElseThrow(
+				() -> new RecordNotFoundException("User does not exist with email '" + request.getEmail() + "'."));
 		if (!user.getEmailVerification().getVerificationCode().equals(request.getCode())) {
 			throw new VerificationCodeMismatchException("Verificaiton code mismatch.");
-		} 
+		}
 		user.getEmailVerification().setVerificationCode(null);
 		User verifiedUser = userRepository.save(user);
 		String token = tokenProvider.generateRefreshToken(verifiedUser);
@@ -77,7 +78,7 @@ public class UserSeviceImpl implements UserService {
 	@Override
 	public UserDto getProfileDetails(Long id) {
 		User user = userRepository.findById(id).get();
-		
+
 		return userMapper.mapToUserDto(user);
 	}
 
@@ -120,6 +121,45 @@ public class UserSeviceImpl implements UserService {
 	public List<UserDto> searchUsers(String key, Long currentUserId) {
 		List<User> users = userRepository.findByLike(key, currentUserId);
 		return users.stream().map(userMapper::mapToUserDto).toList();
+	}
+
+	@Override
+	public VerificationResponse changeEmail(String email, Long userId) {
+		User user = userRepository.findById(userId).get();
+		if (user.getEmail().equals(email)) {
+			throw new RecordAlreadyExistException("This email is already linked with your account.");
+		}
+		boolean existByEmail = userRepository.existsByEmail(email);
+		if (existByEmail) {
+			throw new RecordAlreadyExistException("User account with email '" + email + "' already exists.");
+		}
+
+		String otp = generateOpt();
+		String mailBody = mailTemplate.verificationMailTemplate(user.getUsername(), otp);
+		user.getEmailVerification().setEmail(email);
+		user.getEmailVerification().setVerificationCode(otp);
+		user.getEmailVerification().setVerified(false);
+		userRepository.save(user);
+		mailService.sendEmail(email, "[" + otp + "] Verification code", mailBody);
+		return new VerificationResponse(true, email, "Verification code sent to '" + email + "'.");
+	}
+
+	@Override
+	public UserDto verifyEmail(VerificationRequest request, Long userId) {
+		User user = userRepository.findById(userId).get();
+		if (!user.getEmailVerification().getEmail().equals(request.getEmail())) {
+			throw new RecordNotFoundException("Email mismatch.");
+		}
+		if (!user.getEmailVerification().getVerificationCode().equals(request.getCode())) {
+			throw new VerificationCodeMismatchException("Verification code mismatch.");
+		}
+
+		user.setEmail(request.getEmail());
+		user.getEmailVerification().setEmail(null);
+		user.getEmailVerification().setVerificationCode(null);
+		user.getEmailVerification().setVerified(true);
+
+		return userMapper.mapToUserDto(userRepository.save(user));
 	}
 
 }

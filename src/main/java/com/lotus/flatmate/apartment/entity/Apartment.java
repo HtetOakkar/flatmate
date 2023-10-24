@@ -1,4 +1,4 @@
-package com.lotus.flatmate.aparment.entity;
+package com.lotus.flatmate.apartment.entity;
 
 import com.lotus.flatmate.post.entity.Post;
 

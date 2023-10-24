@@ -66,8 +66,8 @@ public class SecurityConfig {
 		return http.cors(AbstractHttpConfigurer::disable).csrf(AbstractHttpConfigurer::disable)
 				.sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authorizeHttpRequests(request -> request
-						.requestMatchers("/api/auth/user/register", "/api/auth/user/verify", "/api/auth/login",
-								"/api/user/check-email", "/api/user/verify-otp", "/api/auth/refresh-token", "/api/state")
+						.requestMatchers("/api/auth/users/register", "/api/auth/users/verify", "/api/auth/login",
+								"/api/users/email", "/api/users/verify", "/api/auth/refresh-token", "/api/state")
 						.permitAll().anyRequest().authenticated())
 				.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
 				.exceptionHandling(handler -> handler.authenticationEntryPoint(unauthorizedHandler)).build();

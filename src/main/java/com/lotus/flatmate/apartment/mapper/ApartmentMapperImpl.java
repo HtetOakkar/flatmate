@@ -1,12 +1,12 @@
-package com.lotus.flatmate.aparment.mapper;
+package com.lotus.flatmate.apartment.mapper;
 
 import org.springframework.stereotype.Component;
 
-import com.lotus.flatmate.aparment.dto.AllApartmentDto;
-import com.lotus.flatmate.aparment.dto.ApartmentDto;
-import com.lotus.flatmate.aparment.entity.Apartment;
-import com.lotus.flatmate.aparment.request.ApartmentRequest;
-import com.lotus.flatmate.aparment.response.ApartmentResponse;
+import com.lotus.flatmate.apartment.dto.AllApartmentDto;
+import com.lotus.flatmate.apartment.dto.ApartmentDto;
+import com.lotus.flatmate.apartment.entity.Apartment;
+import com.lotus.flatmate.apartment.request.ApartmentRequest;
+import com.lotus.flatmate.apartment.response.ApartmentResponse;
 
 @Component
 public class ApartmentMapperImpl implements ApartmentMapper{

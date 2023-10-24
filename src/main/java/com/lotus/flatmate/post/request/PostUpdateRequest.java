@@ -3,7 +3,7 @@ package com.lotus.flatmate.post.request;
 import java.math.BigDecimal;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.lotus.flatmate.aparment.request.ApartmentRequest;
+import com.lotus.flatmate.apartment.request.ApartmentRequest;
 
 import lombok.Getter;
 import lombok.Setter;

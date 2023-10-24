@@ -6,7 +6,7 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Component;
 
-import com.lotus.flatmate.aparment.mapper.ApartmentMapper;
+import com.lotus.flatmate.apartment.mapper.ApartmentMapper;
 import com.lotus.flatmate.picture.mapper.PictureMapper;
 import com.lotus.flatmate.post.dto.AllPostDto;
 import com.lotus.flatmate.post.dto.PostDto;
@@ -135,9 +135,9 @@ public class PostMapperImpl implements PostMapper {
 		PostPaginationResponse response = new PostPaginationResponse();
 		response.setPosts(postsResponses);
 		if (postPage.hasNext()) {
-			response.setCursor(postsResponses.get(postsResponses.size() - 1).getId());
+			response.setCursor(postsResponses.get(postsResponses.size() - 1).getUpdatedAt());
 		} else {
-			response.setCursor(0L);
+			response.setCursor(null);
 		}
 		response.setHasNext(postPage.hasNext());
 		return response;

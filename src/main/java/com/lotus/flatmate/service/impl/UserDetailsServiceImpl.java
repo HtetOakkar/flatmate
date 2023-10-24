@@ -23,9 +23,9 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 		User user = userRepository.findByEmail(email)
 				.orElseThrow(() -> new RecordNotFoundException("User account with email '" + email +"' not found."));
-		if (!user.getEmailVerification().isVerified() && user.getEmailVerification() == null) {
-			throw new NonVerifiedException("You email is not verified yet. Please, verify your email first.");
-		}
+//		if (!user.getEmailVerification().isVerified() && user.getEmailVerification() == null) {
+//			throw new NonVerifiedException("You email is not verified yet. Please, verify your email first.");
+//		}
 		return UserPrincipal.build(user);
 	}
 

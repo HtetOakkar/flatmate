@@ -21,7 +21,7 @@ import com.lotus.flatmate.state.service.StateService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/state")
+@RequestMapping("/api/states")
 @RequiredArgsConstructor
 public class StateController {
 	

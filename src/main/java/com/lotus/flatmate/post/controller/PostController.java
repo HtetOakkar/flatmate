@@ -1,7 +1,11 @@
 package com.lotus.flatmate.post.controller;
 
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.imaging.ImageReadException;
@@ -10,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -20,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.lotus.flatmate.auth.response.ApiResponse;
+import com.lotus.flatmate.model.exception.BadRequestException;
 import com.lotus.flatmate.model.exception.RecordAlreadyExistException;
 import com.lotus.flatmate.model.exception.RecordNotFoundException;
 import com.lotus.flatmate.picture.dto.PictureDto;
@@ -41,7 +47,7 @@ import com.lotus.flatmate.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/post")
+@RequestMapping("/api/posts")
 @RequiredArgsConstructor
 public class PostController {
 
@@ -99,11 +105,21 @@ public class PostController {
 
 	@GetMapping
 	@PreAuthorize("hasRole('ROLE_USER')")
-	public PostPaginationResponse getAllPost(@RequestParam(name = "cursor", required = false) Long cursor,
+	public PostPaginationResponse getAllPost(@RequestParam(name = "cursor", required = false) String cursor,
 			@RequestParam(defaultValue = "10", required = false) int limit, @CurrentUser UserPrincipal userPrincipal) {
-		Page<AllPostDto> postPage = postService.getAllPosts(cursor, limit, userPrincipal.getId());
-		UserDto userDto = userService.getById(userPrincipal.getId());
-		return postMapper.mapToPostPageResponse(postPage, userDto);
+		try {
+			Instant cursorInstant = Instant.now();
+			if (cursor != null) {
+				Date cursorDate = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").parse(cursor);
+				cursorInstant = cursorDate.toInstant();
+			}
+			Page<AllPostDto> postPage = postService.getAllPosts(cursorInstant, limit, userPrincipal.getId());
+			UserDto userDto = userService.getById(userPrincipal.getId());
+			return postMapper.mapToPostPageResponse(postPage, userDto);
+		} catch (ParseException e) {
+			throw new BadRequestException("Invalid cursor.");
+		}
+		
 	}
 
 	@DeleteMapping("/{id}")
@@ -158,9 +174,9 @@ public class PostController {
 		return responses;
 	}
 	
-	@PutMapping("/me/{id}")
+	@PatchMapping("/me/{id}")
 	@PreAuthorize("hasRole('ROLE_USER')")
-	public PostResponse upDateTenents(@CurrentUser UserPrincipal currentUser, @RequestParam(name = "tenant") int tenant, @PathVariable Long id) {
+	public PostResponse updateTenents(@CurrentUser UserPrincipal currentUser, @RequestParam(name = "tenant") int tenant, @PathVariable Long id) {
 		PostDto postDto = postService.updateTenant(tenant, id, currentUser.getId());
 		return postMapper.mapToPostResponse(postDto);
 	}

@@ -11,9 +11,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -48,7 +48,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/api/users")
 @RequiredArgsConstructor
 public class UserController {
 
@@ -63,20 +63,20 @@ public class UserController {
 	private final ImageUploadService imageUploadService;
 
 	// Forgot password first step
-	@PostMapping("/check-email")
+	@PostMapping("/email")
 	public VerificationResponse checkMobileNumber(@Valid @RequestBody CheckEmailRequest request) {
 		VerificationResponse response = userService.checkEmail(request.getEmail());
 		return response;
 	}
 
 	// Forgot password second step
-	@PutMapping("/verify-otp")
+	@PatchMapping("/verify")
 	public OtpVerificationResponse verifyOtp(@Valid @RequestBody VerificationRequest request) {
 		OtpVerificationResponse response = userService.verifyOtp(request);
 		return response;
 	}
 
-	@PutMapping("/reset-password")
+	@PatchMapping("/password")
 	@PreAuthorize("hasRole('ROLE_USER')")
 	public ApiResponse resetPassword(@CurrentUser UserPrincipal userPrincipal,
 			@Valid @RequestBody ResetPasswordRequest request) {
@@ -123,7 +123,7 @@ public class UserController {
 		return userMapper.mapToProfileResponse(userDto);
 	}
 
-	@PutMapping("/me/password")
+	@PatchMapping("/me/password")
 	@PreAuthorize("hasRole('ROLE_USER')")
 	public ApiResponse changePassword(@CurrentUser UserPrincipal userPrincipal,
 			@RequestBody ChangePasswordRequest request) {
@@ -135,7 +135,7 @@ public class UserController {
 		return new ApiResponse(true, "Password successfully changed.");
 	}
 
-	@PutMapping("/me/username")
+	@PatchMapping("/me/username")
 	@PreAuthorize("hasRole('ROLE_USER')")
 	public UserProfileResponse changeUsername(@CurrentUser UserPrincipal userPrincipal,
 			@RequestBody ChangeUsernameRequest request) {
@@ -143,7 +143,7 @@ public class UserController {
 		return userMapper.mapToProfileResponse(userDto);
 	}
 
-	@PutMapping("/me/mobile-number")
+	@PatchMapping("/me/mobile-number")
 	@PreAuthorize("hasRole('ROLE_USER')")
 	public UserProfileResponse changeMobileNumber(@CurrentUser UserPrincipal userPrincipal,
 			@RequestBody ChangeMobileNumberRequest request) {
@@ -186,5 +186,19 @@ public class UserController {
 		List<UserDto> userDtos = userService.searchUsers(key, currentUser.getId());
 		UserDto currentUserDto = userService.getById(currentUser.getId());
 		return userDtos.stream().map(userDto -> userMapper.mapToUserDetailsResponse(userDto, currentUserDto)).toList();
+	}
+	
+	@PostMapping("/me/email")
+	@PreAuthorize("hasRole('ROLE_USER')")
+	public VerificationResponse checkEmail(@CurrentUser UserPrincipal currentUser, @RequestBody CheckEmailRequest request) {
+		VerificationResponse response = userService.changeEmail(request.getEmail(), currentUser.getId());
+		return response;
+	}
+	
+	@PatchMapping("/me/email")
+	@PreAuthorize("hasRole('ROLE_USER')")
+	public UserProfileResponse changeEmail(@CurrentUser UserPrincipal currentUser, @RequestBody VerificationRequest request) {
+		UserDto userDto = userService.verifyEmail(request, currentUser.getId());
+		return userMapper.mapToProfileResponse(userDto);
 	}
 }

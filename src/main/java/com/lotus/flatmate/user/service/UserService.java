@@ -32,4 +32,8 @@ public interface UserService {
 
 	List<UserDto> searchUsers(String key, Long currentUserId);
 
+	VerificationResponse changeEmail(String email, Long userId);
+
+	UserDto verifyEmail(VerificationRequest request, Long userId);
+
 }

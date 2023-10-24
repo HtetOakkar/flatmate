@@ -7,7 +7,7 @@ import java.util.List;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import com.lotus.flatmate.aparment.entity.Apartment;
+import com.lotus.flatmate.apartment.entity.Apartment;
 import com.lotus.flatmate.picture.entity.Picture;
 import com.lotus.flatmate.user.entity.User;
 

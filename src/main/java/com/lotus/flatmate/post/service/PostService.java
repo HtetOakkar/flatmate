@@ -1,6 +1,7 @@
 package com.lotus.flatmate.post.service;
 
 import java.io.IOException;
+import java.time.Instant;
 import java.util.List;
 
 import org.apache.commons.imaging.ImageReadException;
@@ -20,7 +21,7 @@ public interface PostService {
 
 	PostDto getPostDetails(Long id);
 
-	Page<AllPostDto> getAllPosts(Long cursor, int limit, Long userId);
+	Page<AllPostDto> getAllPosts(Instant cursor, int limit, Long userId);
 
 	UserDto getUserFromPost(Long id);
 
