@@ -18,6 +18,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
@@ -27,7 +28,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Table(name = "posts")
+@Table(name = "posts", indexes = {@Index(name = "idx_updatedAt", columnList = "updated_at")})
 @Getter
 @Setter
 public class Post {
@@ -62,6 +63,7 @@ public class Post {
 	private Instant createdAt;
 	
 	@UpdateTimestamp
+	@Column(name = "updated_at")
 	private Instant updatedAt;
 	
 	

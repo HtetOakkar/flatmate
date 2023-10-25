@@ -105,7 +105,7 @@ public class UserMapperImpl implements UserMapper {
 				
 				return postResponse;
 			}).collect(Collectors.toList());
-			postResponses.sort(Comparator.comparingLong(PostResponse::getId).reversed());
+			postResponses.sort(Comparator.comparing(PostResponse::getUpdatedAt).reversed());
 			response.setPosts(postResponses);
 		}
 		return response;
