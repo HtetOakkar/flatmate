@@ -188,14 +188,14 @@ public class UserController {
 		return userDtos.stream().map(userDto -> userMapper.mapToUserDetailsResponse(userDto, currentUserDto)).toList();
 	}
 	
-	@PostMapping("/me/email")
+	@PatchMapping("/me/email")
 	@PreAuthorize("hasRole('ROLE_USER')")
 	public VerificationResponse checkEmail(@CurrentUser UserPrincipal currentUser, @RequestBody CheckEmailRequest request) {
 		VerificationResponse response = userService.changeEmail(request.getEmail(), currentUser.getId());
 		return response;
 	}
 	
-	@PatchMapping("/me/email")
+	@PatchMapping("/me/email/verify")
 	@PreAuthorize("hasRole('ROLE_USER')")
 	public UserProfileResponse changeEmail(@CurrentUser UserPrincipal currentUser, @RequestBody VerificationRequest request) {
 		UserDto userDto = userService.verifyEmail(request, currentUser.getId());

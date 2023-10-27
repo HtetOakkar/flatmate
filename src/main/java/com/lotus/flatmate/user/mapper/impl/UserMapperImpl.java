@@ -110,5 +110,4 @@ public class UserMapperImpl implements UserMapper {
 		}
 		return response;
 	}
-
 }
