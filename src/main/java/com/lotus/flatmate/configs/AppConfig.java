@@ -22,7 +22,7 @@ public class AppConfig {
 	}
 
 	@Bean
-	public RestTemplate restTemplate() {
+	RestTemplate restTemplate() {
 		return new RestTemplate();
 	}
 

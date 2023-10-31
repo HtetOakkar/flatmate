@@ -28,12 +28,10 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 		Optional<User> userOptional = userRepository.findByEmail(email);
 
-//		if (!user.getEmailVerification().isVerified() && user.getEmailVerification() == null) {
-//			throw new NonVerifiedException("You email is not verified yet. Please, verify your email first.");
-//		}
 		if (userOptional.isEmpty()) {
 			EmailVerification emailVerification = emailVerificationRepository.findByEmail(email).orElseThrow(
 					() -> new RecordNotFoundException("User account with email '" + email + "' does not exist!"));
+			
 			if (!emailVerification.isVerified()) {
 				throw new NonVerifiedException("Your email is not verified. Please, verify your email first!");
 			}

@@ -39,8 +39,7 @@ public class ImageResizeUtil {
 		if (originalHeight > maxHeight) {
 			newHeight = maxHeight;
 			newWidth = (newHeight * originalWidth) / originalHeight;
-		} 
-		if (originalWidth > maxWidth) {
+		} else if (originalWidth > maxWidth) {
 			newWidth = maxWidth;
 			newHeight = (newWidth * originalHeight) / originalWidth;
 		}
