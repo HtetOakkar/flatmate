@@ -31,9 +31,9 @@ public class AppConfig {
 		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
 		executor.setCorePoolSize(25);
 		executor.setMaxPoolSize(25);
-		executor.setKeepAliveSeconds(1200);
+		executor.setKeepAliveSeconds(3200);
 		executor.setThreadNamePrefix("PostThread-");
-		executor.setQueueCapacity(100);
+		executor.setQueueCapacity(50);
 		executor.initialize();
 		return executor;
 	}

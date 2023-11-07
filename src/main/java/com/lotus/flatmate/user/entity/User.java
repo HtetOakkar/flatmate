@@ -7,7 +7,9 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.lotus.flatmate.conversation.entity.Conversation;
 import com.lotus.flatmate.emailVerification.entity.EmailVerification;
+import com.lotus.flatmate.message.entity.Message;
 import com.lotus.flatmate.post.entity.Post;
 import com.lotus.flatmate.post.entity.SavedPost;
 import com.lotus.flatmate.refreshToken.entity.RefreshToken;
@@ -81,19 +83,28 @@ public class User {
 			@JoinColumn(name = "role_id") })
 	private List<Role> roles;
 	
-	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "user")
+	@OneToOne(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, mappedBy = "user")
 	private EmailVerification emailVerification;
 	
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "user")
+	@OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, mappedBy = "user")
 	private List<RefreshToken> refreshTokens;
 	
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "user")
+	@OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, mappedBy = "user")
 	private List<SocialContact> socialContacts;
 	
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "user")
+	@OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, mappedBy = "user")
 	private List<Post> posts;
 	
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "user")
 	private List<SavedPost> savedPosts;
+	
+	@OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, mappedBy = "sender")
+	private List<Message> messages;
+	
+	@OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, mappedBy = "sender")
+	private List<Conversation> sentConversations;
+	
+	@OneToMany(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, mappedBy = "receiver")
+	private List<Conversation> receiveConversations;
 	
 }

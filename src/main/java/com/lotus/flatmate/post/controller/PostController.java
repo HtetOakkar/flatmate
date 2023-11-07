@@ -141,7 +141,7 @@ public class PostController {
 	
 	@PostMapping("/{id}/save")
 	@PreAuthorize("hasRole('ROLE_USER')")
-	public PostDetailsResponse v(@PathVariable Long id, @CurrentUser UserPrincipal currentUser, @RequestParam boolean save) {
+	public PostDetailsResponse saveOrUnsavePost(@PathVariable Long id, @CurrentUser UserPrincipal currentUser, @RequestParam boolean save) {
 		UserDto userDto = postService.getUserFromPost(id);
 		PostDto postDto;
 		if (save) {

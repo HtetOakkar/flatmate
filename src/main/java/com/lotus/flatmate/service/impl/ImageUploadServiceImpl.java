@@ -18,6 +18,7 @@ import javax.imageio.ImageIO;
 
 import org.apache.commons.imaging.ImageReadException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -52,18 +53,26 @@ public class ImageUploadServiceImpl implements ImageUploadService {
 		String fileName = "image-" + uuid.toString().replace("-", "")
 				+ Instant.now().toString().replace("-", "").replace(".", "").replace(":", "");
 		String filePath = folderName + "/" + fileName;
+		
 		Map<String, String> map = new HashMap<>();
 		map.put("firebaseStorageDownloadTokens", uuid.toString());
+		
 		BlobId blobId = BlobId.of(BUCKET_NAME, filePath);
 		BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setMetadata(map).setContentType("media").build();
+		
 		Storage storage = storageClient.bucket(BUCKET_NAME).getStorage();
 		log.info("Uploading image....");
+		
 		File file = convertToFile(image, fileName);
-
 		Path path = file.toPath();
 
+		
 		storage.create(blobInfo, Files.readAllBytes(path));
-		file.delete();
+		Thread deleteThread = new Thread(() -> {
+			file.delete();
+		});
+		
+		deleteThread.start();
 
 		log.info("Uploaded.");
 
@@ -81,6 +90,7 @@ public class ImageUploadServiceImpl implements ImageUploadService {
 		return tempFile;
 	}
 
+	@Async("TaskExecutor")
 	@Override
 	public void deleteImage(String fileUrl, String folderName) {
 		URI uri;
@@ -88,7 +98,7 @@ public class ImageUploadServiceImpl implements ImageUploadService {
 			uri = new URI(fileUrl);
 			String path = uri.getPath();
 
-			String fileName = retiveFileNameFromUrl(path);
+			String fileName = retriveFileNameFromUrl(path);
 			if (uri.getHost().equals("firebasestorage.googleapis.com")) {
 				log.info("Deleting image...");
 				BlobId blobId = BlobId.of(BUCKET_NAME, folderName + "/" + fileName);
@@ -106,7 +116,7 @@ public class ImageUploadServiceImpl implements ImageUploadService {
 
 	}
 
-	private String retiveFileNameFromUrl(String path) {
+	private String retriveFileNameFromUrl(String path) {
 		String[] segments = path.split("/");
 		if (segments.length > 0) {
 			return segments[segments.length - 1];

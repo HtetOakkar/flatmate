@@ -16,11 +16,11 @@ import org.springframework.web.multipart.MultipartFile;
 public class ImageResizeUtil {
 
 	public BufferedImage resizeImage(MultipartFile multipartFile, String fileName) throws ImageReadException, IOException {
+		//resize large images to 1440p resolution
 		int maxWidth = 1920;
 		int maxHeight = 1440;
 		InputStream inputStream = multipartFile.getInputStream();
 		BufferedImage originalImage = ImageIO.read(inputStream);
-//		BufferedImage originalImage = Imaging.getBufferedImage(inputStream, fileName);
 		
 		if (originalImage == null) {
 			throw new IOException("Image Input Error.");
