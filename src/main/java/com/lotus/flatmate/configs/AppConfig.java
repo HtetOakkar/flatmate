@@ -6,15 +6,17 @@ import java.util.concurrent.Executor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.web.client.RestTemplate;
 
 import jakarta.annotation.PostConstruct;
 
 @Configuration
 @EnableAsync
+@EnableScheduling
 public class AppConfig {
-
 
 	@PostConstruct
 	void started() {
@@ -36,6 +38,15 @@ public class AppConfig {
 		executor.setQueueCapacity(50);
 		executor.initialize();
 		return executor;
+	}
+
+	@Bean
+	ThreadPoolTaskScheduler taskScheduler() {
+		ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
+		taskScheduler.setPoolSize(5);
+		taskScheduler.setThreadNamePrefix("websocket-heartbeat-scheduler-");
+		taskScheduler.initialize();
+		return taskScheduler;
 	}
 
 }
