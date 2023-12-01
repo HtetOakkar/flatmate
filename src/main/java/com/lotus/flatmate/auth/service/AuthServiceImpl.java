@@ -60,6 +60,7 @@ public class AuthServiceImpl implements AuthService {
 	public VerificationResponse registerUser(UserDto userDto) {
 		String otp = generateOpt();
 		String mailBody = mailTemplate.verificationMailTemplate(userDto.getUsername(), otp);
+		String subject = String.format("[%s] Verification code", otp);
 		VerificationResponse response = new VerificationResponse();
 		Optional<EmailVerification> existingEmailVerificationOpt = emailVerificationRepository
 				.findByEmail(userDto.getEmail());
@@ -94,9 +95,9 @@ public class AuthServiceImpl implements AuthService {
 			}
 		}
 
-		mailService.sendEmail(userDto.getEmail(), "Verification code", mailBody);
+		mailService.sendEmail(userDto.getEmail(),subject, mailBody);
 		response.setEmail(userDto.getEmail());
-		response.setMessage("Verification code was sent to " + userDto.getEmail() + ".");
+		response.setMessage(String.format("Verification code was sent to %s .", userDto.getEmail()));
 		response.setSuccess(true);
 		return response;
 	}

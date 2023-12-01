@@ -47,10 +47,10 @@ public class UserSeviceImpl implements UserService {
 				.orElseThrow(() -> new RecordNotFoundException("User does not exist with email '" + email + "'."));
 		String otp = generateOpt();
 		String mailBody = mailTemplate.verificationMailTemplate(user.getUsername(), otp);
-
+		String subject = String.format("[%s] Verification code", otp);
 		user.getEmailVerification().setVerificationCode(otp);
 		userRepository.save(user);
-		mailService.sendEmail(email, "[" + otp + "] Verification code", mailBody);
+		mailService.sendEmail(email, subject , mailBody);
 		return new VerificationResponse(true, email, "Verification code sent to '" + email + "'.");
 	}
 
@@ -135,12 +135,13 @@ public class UserSeviceImpl implements UserService {
 		}
 
 		String otp = generateOpt();
+		String subject = String.format("[%s] Verification code", otp);
 		String mailBody = mailTemplate.verificationMailTemplate(user.getUsername(), otp);
 		user.getEmailVerification().setEmail(email);
 		user.getEmailVerification().setVerificationCode(otp);
 		user.getEmailVerification().setVerified(false);
 		userRepository.save(user);
-		mailService.sendEmail(email, "[" + otp + "] Verification code", mailBody);
+		mailService.sendEmail(email, subject, mailBody);
 		return new VerificationResponse(true, email, "Verification code sent to '" + email + "'.");
 	}
 

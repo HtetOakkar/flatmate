@@ -75,6 +75,8 @@ public class PostController {
 					pictureDtos.add(pictureDto);
 				}
 			}
+		} else {
+			throw new BadRequestException("Please upload at least one photo.");
 		}
 		UserDto userDto = userService.getById(userPrincipal.getId());
 		PostDto postDto = postMapper.mapToDto(request);

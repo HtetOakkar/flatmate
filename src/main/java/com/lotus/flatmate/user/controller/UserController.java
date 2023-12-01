@@ -65,15 +65,13 @@ public class UserController {
 	// Forgot password first step
 	@PostMapping("/email")
 	public VerificationResponse checkMobileNumber(@Valid @RequestBody CheckEmailRequest request) {
-		VerificationResponse response = userService.checkEmail(request.getEmail());
-		return response;
+		return userService.checkEmail(request.getEmail());
 	}
 
 	// Forgot password second step
 	@PatchMapping("/verify")
 	public OtpVerificationResponse verifyOtp(@Valid @RequestBody VerificationRequest request) {
-		OtpVerificationResponse response = userService.verifyOtp(request);
-		return response;
+		return userService.verifyOtp(request);
 	}
 
 	@PatchMapping("/password")

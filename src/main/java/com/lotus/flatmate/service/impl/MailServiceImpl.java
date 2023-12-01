@@ -39,8 +39,10 @@ public class MailServiceImpl implements MailService{
 		try {
 			helper = new MimeMessageHelper(mimeMessage, true);
 			helper.setFrom(new InternetAddress(username, senderName));
+			helper.setReplyTo(new InternetAddress(username, senderName));
 			helper.setTo(to);
 			helper.setSubject(subject);
+			helper.setPriority(1);
 			helper.setText(body, true);
 			log.info("Sending mail....");
 			javaMailSender.send(mimeMessage);

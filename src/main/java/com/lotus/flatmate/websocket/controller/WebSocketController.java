@@ -27,7 +27,6 @@ public class WebSocketController {
 	@MessageMapping("/reply/{receiver}")
 	public void reply(@Payload String message, StompHeaderAccessor headerAccessor, @DestinationVariable String receiver) throws InterruptedException {
 		Thread.sleep(1000);
-		
 		conversationService.handlePrivateMessage(headerAccessor, message, receiver);
 	}
 }

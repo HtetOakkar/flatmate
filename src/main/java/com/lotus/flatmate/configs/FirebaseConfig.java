@@ -39,15 +39,20 @@ public class FirebaseConfig {
 	
 	@Bean
 	StorageOptions storageOptions() throws FileNotFoundException, IOException {
-		return StorageOptions.newBuilder().setCredentials(GoogleCredentials.fromStream(new FileInputStream(SERVICE_ACCOUNT))).build();
+		return StorageOptions.newBuilder().setCredentials(googleCredentials()).build();
 	}
 
 	@Bean
 	FirebaseApp firebaseApp() throws IOException {
-		FileInputStream serviceAccount = new FileInputStream(SERVICE_ACCOUNT);
 		FirebaseOptions options = FirebaseOptions.builder()
-				.setCredentials(GoogleCredentials.fromStream(serviceAccount))
+				.setCredentials(googleCredentials())
 				.build();
 		return FirebaseApp.initializeApp(options);
+	}
+	
+	@Bean
+	GoogleCredentials googleCredentials() throws IOException {
+		FileInputStream serviceAccount = new FileInputStream(SERVICE_ACCOUNT);
+		return GoogleCredentials.fromStream(serviceAccount);
 	}
 }

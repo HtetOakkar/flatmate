@@ -9,13 +9,11 @@ import java.io.InputStream;
 import javax.imageio.ImageIO;
 
 import org.apache.commons.imaging.ImageReadException;
-import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
-@Component
 public class ImageResizeUtil {
 
-	public BufferedImage resizeImage(MultipartFile multipartFile, String fileName) throws ImageReadException, IOException {
+	public static BufferedImage resizeImage(MultipartFile multipartFile, String fileName) throws ImageReadException, IOException {
 		//resize large images to 1440p resolution
 		int maxWidth = 1920;
 		int maxHeight = 1440;

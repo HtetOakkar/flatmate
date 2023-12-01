@@ -139,10 +139,9 @@ public class PostServiceImpl implements PostService {
 	public PostDto updatePost(Long id, Long userId, MultipartFile[] images, PostUpdateRequest request)
 			throws IOException, ImageReadException {
 
-		User user = userRepository.findById(userId).get();
 		Post post = postRepository.findById(id)
 				.orElseThrow(() -> new RecordNotFoundException("Post not found wiht Id : " + id));
-		if (!post.getUser().equals(user)) {
+		if (post.getUser().getId() != userId) {
 			throw new UnauthorizedActionException("You are not authorized to update this post.");
 		}
 		if (request.getRemovedImageIds().length > 0) {

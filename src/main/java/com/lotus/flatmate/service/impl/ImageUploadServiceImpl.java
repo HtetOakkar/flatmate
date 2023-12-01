@@ -37,14 +37,13 @@ public class ImageUploadServiceImpl implements ImageUploadService {
 
 	private final StorageClient storageClient;
 
-	private final ImageResizeUtil imageResizeUtil;
 
 	@Value("${firebase.storage.bucket}")
 	private String BUCKET_NAME;
 
-	public ImageUploadServiceImpl(StorageClient storageClient, ImageResizeUtil imageResizeUtil) {
+	public ImageUploadServiceImpl(StorageClient storageClient) {
 		this.storageClient = storageClient;
-		this.imageResizeUtil = imageResizeUtil;
+
 	}
 
 	@Override
@@ -83,7 +82,7 @@ public class ImageUploadServiceImpl implements ImageUploadService {
 	private File convertToFile(MultipartFile multipartFile, String fileName) throws IOException, ImageReadException {
 		File tempFile = new File(Objects.requireNonNull(fileName));
 
-		BufferedImage resizedImage = imageResizeUtil.resizeImage(multipartFile, fileName);
+		BufferedImage resizedImage = ImageResizeUtil.resizeImage(multipartFile, fileName);
 		FileOutputStream fos = new FileOutputStream(tempFile);
 		ImageIO.write(resizedImage, "jpg", tempFile);
 		fos.close();
