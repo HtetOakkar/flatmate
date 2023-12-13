@@ -1,5 +1,8 @@
 package com.lotus.flatmate.websocket.utils;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
@@ -22,7 +25,9 @@ public class WebSocketEventListener {
 	public void handleWebSocketDisconnectEventListener(SessionDisconnectEvent event) {
 		StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
 		String message = messageFormatter(headerAccessor, "disconnected");
-		messageTemplate.convertAndSend("/topic/hello", message);
+		Map<String, Object> payload = new HashMap<>();
+		payload.put("message", message);
+		messageTemplate.convertAndSend("/topic/hello", payload);
 		log.info(message);
 	}
 
@@ -30,8 +35,9 @@ public class WebSocketEventListener {
 	public void handleWebSocketConnectEventListener(SessionConnectEvent event) {
 		StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
 		String message = messageFormatter(headerAccessor, "connected");
-		
-		messageTemplate.convertAndSend("/topic/hello", message);
+		Map<String, Object> payload = new HashMap<>();
+		payload.put("message", message);
+		messageTemplate.convertAndSend("/topic/hello", payload);
 		log.info(message);
 	}
 
@@ -39,7 +45,9 @@ public class WebSocketEventListener {
 	public void handleWebSocketSubscribeEventListener(SessionSubscribeEvent event) {
 		StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
 		String message = messageFormatter(headerAccessor, "subscribed");
-		messageTemplate.convertAndSend("/topic/hello", message);
+		Map<String, Object> payload = new HashMap<>();
+		payload.put("message", message);
+		messageTemplate.convertAndSend("/topic/hello", payload);
 		log.info(message);
 	}
 
