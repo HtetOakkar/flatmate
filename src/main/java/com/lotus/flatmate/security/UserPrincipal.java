@@ -94,7 +94,7 @@ public class UserPrincipal implements UserDetails {
 
 	@Override
 	public boolean isEnabled() {
-		if (this.lock == true) {
+		if (this.lock) {
 			return false;
 		}
 		return true;

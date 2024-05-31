@@ -5,7 +5,6 @@ import java.security.Principal;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Controller;
 
 import com.lotus.flatmate.conversation.service.ConversationService;
@@ -25,8 +24,10 @@ public class WebSocketController {
 	}
 	
 	@MessageMapping("/reply/{receiver}")
-	public void reply(@Payload String message, StompHeaderAccessor headerAccessor, @DestinationVariable String receiver) throws InterruptedException {
+	public void reply(@Payload String message, Principal principal, @DestinationVariable String receiver) throws InterruptedException {
 		Thread.sleep(1000);
-		conversationService.handlePrivateMessage(headerAccessor, message, receiver);
+		conversationService.handlePrivateMessage(principal , message, receiver);
 	}
+	
+	
 }

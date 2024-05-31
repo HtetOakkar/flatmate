@@ -5,10 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.messaging.MessageDeliveryException;
-import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageSendingOperations;
-import org.springframework.messaging.simp.SimpMessageType;
-import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Service;
 
 import com.lotus.flatmate.conversation.service.ConversationService;
@@ -33,17 +30,16 @@ public class ConversationServiceImpl implements ConversationService {
 	}
 
 	@Override
-	public void handlePrivateMessage(StompHeaderAccessor headerAccessor, String message, String receiver) {
-		String username = headerAccessor.getSessionAttributes().get("username") == null? "User" : (String) headerAccessor.getSessionAttributes().get("username");
-		SimpMessageHeaderAccessor simpHeaderAccessor = SimpMessageHeaderAccessor.create(SimpMessageType.MESSAGE);
-		simpHeaderAccessor.setSessionId(headerAccessor.getSessionId());
-		simpHeaderAccessor.setLeaveMutable(true);
+	public void handlePrivateMessage(Principal principal, String message, String receiver) {
+		String username = principal.getName();
 		Map<String, Object> messagePayload = new HashMap<>();
 		messagePayload.put("sender", username);
 		messagePayload.put("message", message);
+		String destination = String.format("/queue/%s/reply", receiver);
 		try {
 			log.info("sending message to {}", receiver);
-			messageTemplate.convertAndSendToUser(simpHeaderAccessor.getSessionId(), "/queue/reply", messagePayload);
+			log.info("destination: {}",destination);
+			messageTemplate.convertAndSend(destination, messagePayload);
 		} catch (MessageDeliveryException e) {
 			log.error(e.getMessage());
 		}

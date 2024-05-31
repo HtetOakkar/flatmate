@@ -82,8 +82,7 @@ public class PostController {
 		PostDto postDto = postMapper.mapToDto(request);
 		postDto.setPictures(pictureDtos);
 		PostDto savedPostDto = postService.createPost(postDto, userPrincipal.getId());
-		PostDetailsResponse response = postMapper.mapToResponse(savedPostDto, userDto);
-		return response;
+		return postMapper.mapToResponse(savedPostDto, userDto);
 	}
 
 	@GetMapping("/me")

@@ -25,7 +25,7 @@ import com.lotus.flatmate.security.JwtAuthenticationFilter;
 @Configuration
 @EnableScheduling
 @EnableWebSecurity
-@EnableMethodSecurity(securedEnabled = true, jsr250Enabled = true)
+@EnableMethodSecurity(securedEnabled = true, jsr250Enabled = true, prePostEnabled = true)
 public class SecurityConfig {
 
 	private final UserDetailsService userDetailsService;
@@ -67,7 +67,7 @@ public class SecurityConfig {
 				.sessionManagement(manager -> manager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authorizeHttpRequests(request -> request
 						.requestMatchers("/api/auth/users/register", "/api/auth/users/verify", "/api/auth/login",
-								"/api/users/email", "/api/users/verify", "/api/auth/refresh-token", "/api/state", "/socket/**")
+								"/api/users/email", "/api/users/verify", "/api/auth/refresh-token", "/api/state", "/socket/**" , "/api/conversations/**")
 						.permitAll()
 						.anyRequest().authenticated())
 				.addFilterBefore(jwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)

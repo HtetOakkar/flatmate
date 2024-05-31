@@ -23,8 +23,11 @@ import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBr
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
 
+import com.lotus.flatmate.model.exception.UnauthorizedActionException;
 import com.lotus.flatmate.security.JwtTokenProvider;
 import com.lotus.flatmate.security.UserPrincipal;
+import com.lotus.flatmate.websocket.utils.CustomHandshakeHandler;
+import com.lotus.flatmate.websocket.utils.HttpHandShakeInterceptor;
 
 import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +38,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
-	private final ThreadLocal<Authentication> authenticationHolder = new ThreadLocal<>();
 	private final JwtTokenProvider tokenProvider;
 
 	public WebSocketConfig(JwtTokenProvider tokenProvider) {
@@ -52,7 +54,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
 	@Override
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
-		registry.addEndpoint("/socket").setAllowedOriginPatterns("*").withSockJS();
+		registry.addEndpoint("/socket").setAllowedOriginPatterns("*")
+		.setHandshakeHandler(new CustomHandshakeHandler()).withSockJS().setInterceptors(new HttpHandShakeInterceptor());
 		registry.addEndpoint("/socket").setAllowedOriginPatterns("*");
 	}
 
@@ -87,7 +90,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 						try {
 							Authentication authentication = new UsernamePasswordAuthenticationToken(userPrincipal, null,
 									authorities);
-							authenticationHolder.set(authentication);
 							SecurityContextHolder.getContext().setAuthentication(authentication);
 							log.info("Authenticated : {}", username);
 							accessor.getSessionAttributes().put("username", username);
@@ -99,6 +101,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 						}
 					} else {
 						log.error("Access denined");
+						throw new UnauthorizedActionException("Access denined.");
 					}
 				}
 

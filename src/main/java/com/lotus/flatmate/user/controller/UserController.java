@@ -111,13 +111,13 @@ public class UserController {
 		userDto.setSocialContactDtos(socialContactDtos);
 		return ResponseEntity.ok(userMapper.mapToProfileResponse(userDto));
 	}
-	
+
 	@DeleteMapping("/me/social-contact/{id}")
 	@PreAuthorize("hasRole('ROLE_USER')")
 	public UserProfileResponse deleteSocialContact(@CurrentUser UserPrincipal userPrincipal, @PathVariable Long id) {
 		socialContactService.deleteSocialContact(id, userPrincipal.getId());
 		UserDto userDto = userService.getById(userPrincipal.getId());
-		
+
 		return userMapper.mapToProfileResponse(userDto);
 	}
 
@@ -149,7 +149,8 @@ public class UserController {
 		return userMapper.mapToProfileResponse(userDto);
 	}
 
-	@PostMapping(path = "/me/profile", consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.MULTIPART_FORM_DATA_VALUE })
+	@PostMapping(path = "/me/profile", consumes = { MediaType.APPLICATION_JSON_VALUE,
+			MediaType.MULTIPART_FORM_DATA_VALUE })
 	@PreAuthorize("hasRole('ROLE_USER')")
 	public UserProfileResponse uploadUserProfilePhoto(@CurrentUser UserPrincipal userPrincipal,
 			@RequestPart(value = "image", required = false) MultipartFile image,
@@ -157,10 +158,10 @@ public class UserController {
 		if (!image.isEmpty()) {
 			String folderName = "profile_photos";
 			if (request.getImageUrl() != null) {
-				 String previousUrl = request.getImageUrl();
-				 imageUploadService.deleteImage(previousUrl, folderName);
+				String previousUrl = request.getImageUrl();
+				imageUploadService.deleteImage(previousUrl, folderName);
 			}
-			
+
 			String profileUrl = imageUploadService.uploadImage(image, folderName);
 			request.setImageUrl(profileUrl);
 
@@ -169,7 +170,7 @@ public class UserController {
 		UserDto userDto = userService.uploadProfilePhoto(request, userPrincipal.getId());
 		return userMapper.mapToProfileResponse(userDto);
 	}
-	
+
 	@GetMapping("/{id}")
 	@PreAuthorize("hasRole('ROLE_USER')")
 	public UserDetailsResponse getUserDetails(@PathVariable Long id, @CurrentUser UserPrincipal currentUser) {
@@ -177,25 +178,27 @@ public class UserController {
 		UserDto currentUserDto = userService.getById(currentUser.getId());
 		return userMapper.mapToUserDetailsResponse(userDto, currentUserDto);
 	}
-	
+
 	@GetMapping("/search")
 	@PreAuthorize("hasRole('ROLE_USER')")
-	public List<UserDetailsResponse> searchUsers(@RequestParam(value = "k") String key, @CurrentUser UserPrincipal currentUser) {
+	public List<UserDetailsResponse> searchUsers(@RequestParam(value = "k") String key,
+			@CurrentUser UserPrincipal currentUser) {
 		List<UserDto> userDtos = userService.searchUsers(key, currentUser.getId());
 		UserDto currentUserDto = userService.getById(currentUser.getId());
 		return userDtos.stream().map(userDto -> userMapper.mapToUserDetailsResponse(userDto, currentUserDto)).toList();
 	}
-	
+
 	@PatchMapping("/me/email")
 	@PreAuthorize("hasRole('ROLE_USER')")
-	public VerificationResponse checkEmail(@CurrentUser UserPrincipal currentUser, @RequestBody CheckEmailRequest request) {
-		VerificationResponse response = userService.changeEmail(request.getEmail(), currentUser.getId());
-		return response;
+	public VerificationResponse checkEmail(@CurrentUser UserPrincipal currentUser,
+			@RequestBody CheckEmailRequest request) {
+		return userService.changeEmail(request.getEmail(), currentUser.getId());
 	}
-	
+
 	@PatchMapping("/me/email/verify")
 	@PreAuthorize("hasRole('ROLE_USER')")
-	public UserProfileResponse changeEmail(@CurrentUser UserPrincipal currentUser, @RequestBody VerificationRequest request) {
+	public UserProfileResponse changeEmail(@CurrentUser UserPrincipal currentUser,
+			@RequestBody VerificationRequest request) {
 		UserDto userDto = userService.verifyEmail(request, currentUser.getId());
 		return userMapper.mapToProfileResponse(userDto);
 	}

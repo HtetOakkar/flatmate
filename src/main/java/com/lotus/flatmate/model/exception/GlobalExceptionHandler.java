@@ -14,6 +14,7 @@ public class GlobalExceptionHandler {
 
 	@ExceptionHandler(PasswordMismatchException.class)
 	public ResponseEntity<?> handlePasswordMismatchException(PasswordMismatchException e) {
+		
 		GlobalExceptionResponse response = new GlobalExceptionResponse(HttpStatus.UNAUTHORIZED, e.getMessage(), Instant.now());
 		return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
 	}

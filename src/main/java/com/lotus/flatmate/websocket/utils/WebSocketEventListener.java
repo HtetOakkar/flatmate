@@ -35,9 +35,9 @@ public class WebSocketEventListener {
 	public void handleWebSocketConnectEventListener(SessionConnectEvent event) {
 		StompHeaderAccessor headerAccessor = StompHeaderAccessor.wrap(event.getMessage());
 		String message = messageFormatter(headerAccessor, "connected");
-		Map<String, Object> payload = new HashMap<>();
-		payload.put("message", message);
-		messageTemplate.convertAndSend("/topic/hello", payload);
+//		Map<String, Object> payload = new HashMap<>();
+//		payload.put("message", message);
+//		messageTemplate.convertAndSend("/topic/hello", payload);
 		log.info(message);
 	}
 
